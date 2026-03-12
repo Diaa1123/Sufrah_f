@@ -5,9 +5,9 @@ module.exports = {
     content: [
         "src/views/**/*.twig",
         "src/assets/js/**/*.js",
-        // ⚠️ Keep Salla safelist (contains Twilight theme primary colors)
-        // Future optimization: Extract only used classes to reduce from ~588KB to ~80-100KB
-        'node_modules/@salla.sa/twilight-tailwind-theme/safe-list-css.txt',
+        // ⚠️ Salla safelist commented out to allow Twilight plugin to work properly
+        // The Twilight plugin provides primary/secondary/accent colors dynamically
+        // 'node_modules/@salla.sa/twilight-tailwind-theme/safe-list-css.txt',
     ],
 
     // ✅ Safelist ONLY dynamic/necessary classes
