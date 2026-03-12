@@ -1,0 +1,269 @@
+//
+// Sufrah Delivery Zones Widget Styles
+// Cart and checkout delivery zone selector
+//
+
+.delivery-zones-widget {
+  @apply transition-all duration-300;
+
+  // Smooth hover effect on entire widget
+  &:hover {
+    @apply shadow-md;
+  }
+
+  // Ensure proper spacing
+  & > * + * {
+    @apply border-t border-gray-100;
+  }
+}
+
+// === ZONE SELECTOR ===
+[data-zone-selector] {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  background-position: left 0.75rem center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  padding-left: 2.5rem;
+
+  [dir="rtl"] & {
+    background-position: right 0.75rem center;
+    padding-left: 1rem;
+    padding-right: 2.5rem;
+  }
+
+  &:focus {
+    @apply outline-none shadow-lg;
+  }
+
+  option {
+    @apply py-2;
+  }
+
+  // Disabled state
+  &:disabled {
+    @apply bg-gray-100 cursor-not-allowed opacity-60;
+  }
+}
+
+// === ZONE DETAILS ===
+.zone-details {
+  animation: slideDown 0.3s ease-out;
+
+  &.hidden {
+    animation: slideUp 0.2s ease-in;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+// === DETAILS GRID ===
+[data-zone-details] {
+  .grid {
+    @apply relative;
+
+    // Divider lines
+    &::before,
+    &::after {
+      content: '';
+      @apply absolute top-1/2 w-px h-1/2 bg-gray-200 transform -translate-y-1/2;
+    }
+
+    // Hide dividers on mobile
+    @media (max-width: 640px) {
+      @apply grid-cols-1 gap-2;
+
+      &::before,
+      &::after {
+        @apply hidden;
+      }
+
+      .border-x {
+        @apply border-x-0 border-t border-b;
+        @apply py-3;
+      }
+    }
+  }
+}
+
+// === WARNING MESSAGE ===
+[data-zone-warning] {
+  animation: fadeInBounce 0.4s ease-out;
+
+  &.hidden {
+    @apply hidden;
+  }
+}
+
+@keyframes fadeInBounce {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+// === ZONE MAP ===
+[data-zone-map] {
+  .h-64 {
+    @apply relative overflow-hidden;
+
+    // Loading state
+    &.loading {
+      @apply bg-gray-200 animate-pulse;
+    }
+
+    // Map container
+    #zone-map {
+      @apply w-full h-full;
+    }
+  }
+}
+
+// === DELIVERY FEE DISPLAY ===
+[data-delivery-fee] {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+
+  &.updating {
+    animation: priceUpdate 0.3s ease-in-out;
+  }
+}
+
+@keyframes priceUpdate {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+    color: theme('colors.primary.700');
+  }
+}
+
+// === MIN ORDER INDICATOR ===
+[data-min-order] {
+  font-variant-numeric: tabular-nums;
+
+  &.not-met {
+    @apply text-red-600;
+    animation: shake 0.5s ease-in-out;
+  }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+// === ESTIMATED TIME ===
+[data-delivery-time] {
+  @apply flex items-center justify-center gap-1;
+
+  &::before {
+    content: '⏱️';
+    @apply text-base;
+  }
+}
+
+// === RESPONSIVE ADJUSTMENTS ===
+@media (max-width: 640px) {
+  .delivery-zones-widget {
+    @apply rounded-lg;
+
+    .p-4 {
+      @apply p-3;
+    }
+
+    h3 {
+      @apply text-base;
+    }
+
+    p {
+      @apply text-xs;
+    }
+  }
+
+  [data-zone-selector] {
+    @apply py-2 text-sm;
+  }
+}
+
+// === RTL SUPPORT ===
+[dir="rtl"] {
+  [data-delivery-fee],
+  [data-min-order] {
+    direction: ltr;
+    text-align: right;
+  }
+}
+
+// === PRINT STYLES ===
+@media print {
+  .delivery-zones-widget {
+    @apply border-gray-400;
+
+    [data-zone-selector],
+    [data-zone-warning],
+    [data-zone-map] {
+      @apply hidden;
+    }
+
+    [data-zone-details] {
+      @apply block border-2 border-gray-400 p-4;
+    }
+  }
+}
+
+// === ACCESSIBILITY ===
+[data-zone-selector]:focus-visible {
+  @apply ring-4 ring-primary-300 ring-offset-2;
+}
+
+// High contrast mode
+@media (prefers-contrast: high) {
+  .delivery-zones-widget {
+    @apply border-black;
+
+    [data-zone-selector] {
+      @apply border-black;
+    }
+  }
+}
+
+// Reduced motion
+@media (prefers-reduced-motion: reduce) {
+  .zone-details,
+  [data-zone-warning],
+  [data-delivery-fee],
+  [data-min-order] {
+    animation: none !important;
+    transition: none !important;
+  }
+}

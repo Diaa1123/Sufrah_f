@@ -1,0 +1,169 @@
+{#
+  Order Scheduling Component
+  ASAP vs Scheduled delivery selector
+
+  Usage:
+  {% include 'components/restaurant/order-scheduling.twig' %}
+#}
+
+{% set scheduling_enabled = salla.config.get('enable_scheduling', true) %}
+
+<div class="order-scheduling-widget bg-white rounded-xl border-2 border-gray-200 overflow-hidden"
+     data-order-scheduling>
+
+  {# Header #}
+  <div class="p-4 bg-gradient-to-r from-secondary-50 to-primary-50 border-b-2 border-gray-200">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 bg-secondary-600 rounded-full flex items-center justify-center">
+        <i class="sicon-calendar text-white text-xl"></i>
+      </div>
+      <div>
+        <h3 class="text-lg font-bold text-gray-900">
+          {{ 'restaurant.order_scheduling'|t }}
+        </h3>
+        <p class="text-sm text-gray-600">
+          {{ 'restaurant.when_deliver'|t }}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  {# Scheduling Type Selection #}
+  <div class="p-4 border-b border-gray-200">
+    <div class="grid grid-cols-2 gap-3">
+      {# ASAP Option #}
+      <label class="scheduling-type-option">
+        <input
+          type="radio"
+          name="scheduling_type"
+          value="asap"
+          checked
+          class="sr-only peer"
+        >
+        <div class="p-4 border-2 border-gray-200 rounded-xl cursor-pointer transition-all
+                    peer-checked:border-secondary-500 peer-checked:bg-secondary-50 peer-checked:shadow-md
+                    hover:border-secondary-300
+                    text-center">
+          <div class="flex flex-col items-center gap-2">
+            <i class="sicon-zap text-3xl text-secondary-600"></i>
+            <div class="font-bold text-gray-900">
+              {{ 'restaurant.order_now'|t }}
+            </div>
+            <div class="text-xs text-gray-600">
+              {{ 'restaurant.deliver_asap'|t }}
+            </div>
+          </div>
+        </div>
+      </label>
+
+      {# Scheduled Option #}
+      {% if scheduling_enabled %}
+        <label class="scheduling-type-option">
+          <input
+            type="radio"
+            name="scheduling_type"
+            value="scheduled"
+            class="sr-only peer"
+          >
+          <div class="p-4 border-2 border-gray-200 rounded-xl cursor-pointer transition-all
+                      peer-checked:border-primary-500 peer-checked:bg-primary-50 peer-checked:shadow-md
+                      hover:border-primary-300
+                      text-center">
+            <div class="flex flex-col items-center gap-2">
+              <i class="sicon-clock text-3xl text-primary-600"></i>
+              <div class="font-bold text-gray-900">
+                {{ 'restaurant.schedule_later'|t }}
+              </div>
+              <div class="text-xs text-gray-600">
+                {{ 'restaurant.choose_time'|t }}
+              </div>
+            </div>
+          </div>
+        </label>
+      {% endif %}
+    </div>
+  </div>
+
+  {# ASAP Section #}
+  <div class="asap-section p-4" data-asap-section>
+    <div class="bg-secondary-50 border border-secondary-200 rounded-xl p-4">
+      <div data-asap-estimate>
+        {# Will be populated by JS #}
+        <div class="flex items-center justify-center gap-2 text-gray-500">
+          <i class="sicon-loader animate-spin"></i>
+          <span>{{ 'common.calculating'|t }}...</span>
+        </div>
+      </div>
+    </div>
+
+    {# Closed Message #}
+    <div class="hidden mt-4" data-closed-message>
+      {# Will be populated by JS #}
+    </div>
+  </div>
+
+  {# Scheduled Section #}
+  <div class="scheduled-section hidden p-4" data-scheduled-section>
+    <div class="space-y-4">
+      {# Date Picker #}
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-2">
+          {{ 'restaurant.select_date'|t }}
+          <span class="text-accent-500">*</span>
+        </label>
+        <select
+          data-date-picker
+          required
+          class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg
+                 focus:ring-2 focus:ring-primary-500 focus:border-primary-500
+                 bg-white text-gray-900 font-medium cursor-pointer"
+        >
+          <option value="">{{ 'restaurant.select_date'|t }}</option>
+          {# Options will be populated by JS #}
+        </select>
+      </div>
+
+      {# Time Picker #}
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-2">
+          {{ 'restaurant.select_time'|t }}
+          <span class="text-accent-500">*</span>
+        </label>
+        <select
+          data-time-picker
+          required
+          disabled
+          class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg
+                 focus:ring-2 focus:ring-primary-500 focus:border-primary-500
+                 bg-white text-gray-900 font-medium cursor-pointer
+                 disabled:bg-gray-100 disabled:cursor-not-allowed"
+        >
+          <option value="">{{ 'restaurant.select_date_first'|t }}</option>
+          {# Options will be populated by JS #}
+        </select>
+      </div>
+
+      {# Info Box #}
+      <div class="p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm">
+        <div class="flex items-start gap-2">
+          <i class="sicon-info-circle text-blue-600 flex-shrink-0 mt-0.5"></i>
+          <p class="text-blue-800">
+            {{ 'restaurant.scheduling_info'|t({
+              min_hours: salla.config.get('min_advance_hours', 2)
+            }) }}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.scheduling-type-option input:checked + div {
+  transform: scale(1.02);
+}
+
+.scheduling-type-option:active input + div {
+  transform: scale(0.98);
+}
+</style>

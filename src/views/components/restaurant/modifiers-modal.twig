@@ -1,0 +1,364 @@
+{#
+  Sufrah Modifiers Modal Component
+  Complete product customization interface
+
+  Usage:
+  {% include 'components/restaurant/modifiers-modal.twig' with {
+    product: product,
+    show_in_modal: true
+  } %}
+#}
+
+{% set product = product|default(salla.product.get()) %}
+{% set show_calories = salla.config.get('show_calories', true) %}
+{% set show_ingredients = salla.config.get('show_ingredients', true) %}
+{% set allow_instructions = salla.config.get('enable_special_instructions', true) %}
+{% set max_instructions = salla.config.get('special_instructions_max_chars', 200) %}
+
+<div
+  class="modifiers-container relative"
+  data-product-modifiers
+  data-product-id="{{ product.id }}"
+  data-base-price="{{ product.price }}"
+  data-size-required="{{ product.options.size_required|default(false) }}"
+>
+  {# Loading State #}
+  <div class="modifiers-loading hidden absolute inset-0 bg-white/80 backdrop-blur-sm z-50 flex items-center justify-center">
+    <div class="flex flex-col items-center gap-3">
+      <div class="animate-spin rounded-full h-12 w-12 border-4 border-primary-200 border-t-primary-600"></div>
+      <span class="text-sm text-gray-600">{{ 'common.loading'|t }}...</span>
+    </div>
+  </div>
+
+  {# Product Header #}
+  <div class="mb-6 pb-6 border-b border-gray-200">
+    <div class="flex items-start gap-4">
+      {# Product Image (if in modal) #}
+      {% if show_in_modal|default(false) and product.image %}
+        <div class="w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
+          <img
+            src="{{ product.image.url }}"
+            alt="{{ product.name }}"
+            class="w-full h-full object-cover"
+          >
+        </div>
+      {% endif %}
+
+      <div class="flex-1 min-w-0">
+        <h3 class="text-2xl font-bold text-gray-900 mb-2">{{ product.name }}</h3>
+
+        {% if product.description %}
+          <p class="text-gray-600 text-sm leading-relaxed">{{ product.description }}</p>
+        {% endif %}
+
+        {# Nutrition Info Row #}
+        <div class="flex flex-wrap items-center gap-4 mt-3">
+          {% if show_calories and product.calories %}
+            <div class="flex items-center gap-2 text-sm">
+              <i class="sicon-fire text-accent-500"></i>
+              <span class="text-gray-600">
+                {{ product.calories }} {{ 'restaurant.nutrition.calories'|t }}
+              </span>
+            </div>
+          {% endif %}
+
+          {% if product.preparation_time %}
+            <div class="flex items-center gap-2 text-sm">
+              <i class="sicon-clock text-gray-400"></i>
+              <span class="text-gray-600">{{ product.preparation_time }} {{ 'common.minutes'|t }}</span>
+            </div>
+          {% endif %}
+
+          {% if product.spicy_level %}
+            <div class="flex items-center gap-2 text-sm">
+              {% for i in 1..product.spicy_level %}
+                <i class="sicon-hot text-accent-500 text-xs"></i>
+              {% endfor %}
+              <span class="text-gray-600">{{ 'restaurant.spicy_level'|t }}</span>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# Ingredients (Collapsible) #}
+  {% if show_ingredients and product.ingredients %}
+    <details class="mb-6 group">
+      <summary class="flex items-center justify-between cursor-pointer list-none">
+        <span class="text-base font-semibold text-gray-900">
+          {{ 'restaurant.nutrition.ingredients'|t }}
+        </span>
+        <i class="sicon-chevron-down text-gray-400 transition-transform group-open:rotate-180"></i>
+      </summary>
+      <div class="mt-3 text-sm text-gray-600 leading-relaxed">
+        {{ product.ingredients }}
+      </div>
+    </details>
+  {% endif %}
+
+  {# Allergens Warning #}
+  {% if product.allergens %}
+    <div class="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+      <div class="flex items-start gap-3">
+        <i class="sicon-alert-triangle text-amber-600 text-xl flex-shrink-0 mt-0.5"></i>
+        <div>
+          <h4 class="font-semibold text-amber-900 mb-1">
+            {{ 'restaurant.nutrition.allergens'|t }}
+          </h4>
+          <p class="text-sm text-amber-800">{{ product.allergens }}</p>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  {# === SIZE SELECTION === #}
+  {% if product.options.sizes and product.options.sizes|length > 0 %}
+    <div class="mb-6 size-options">
+      <label class="block text-lg font-semibold text-gray-900 mb-3">
+        {{ 'restaurant.modifiers.select_size'|t }}
+        {% if product.options.size_required %}
+          <span class="text-accent-500 font-normal">*</span>
+        {% endif %}
+      </label>
+
+      <div class="grid grid-cols-{{ product.options.sizes|length > 3 ? '4' : product.options.sizes|length }} gap-3">
+        {% for size in product.options.sizes %}
+          <label class="size-option block">
+            <input
+              type="radio"
+              name="size-{{ product.id }}"
+              value="{{ size.id }}"
+              data-modifier-type="size"
+              data-name="{{ size.name }}"
+              data-name-en="{{ size.name_en|default(size.name) }}"
+              data-price="{{ size.additional_price|default(0) }}"
+              class="sr-only peer"
+              {% if loop.first and not product.options.size_required %}checked{% endif %}
+              {% if product.options.size_required %}required{% endif %}
+            >
+            <div class="relative border-2 border-gray-200 rounded-xl p-4 cursor-pointer transition-all duration-200
+                        peer-checked:border-primary-500 peer-checked:bg-primary-50 peer-checked:shadow-md
+                        hover:border-primary-300 hover:shadow-sm
+                        peer-focus-visible:ring-2 peer-focus-visible:ring-primary-500 peer-focus-visible:ring-offset-2
+                        text-center">
+
+              {# Checkmark badge #}
+              <div class="absolute -top-2 -right-2 w-6 h-6 bg-primary-600 rounded-full items-center justify-center hidden peer-checked:flex">
+                <i class="sicon-check text-white text-xs"></i>
+              </div>
+
+              <div class="font-bold text-gray-900 mb-1">{{ size.name }}</div>
+
+              {% if size.description %}
+                <div class="text-xs text-gray-500 mb-2">{{ size.description }}</div>
+              {% endif %}
+
+              {% if size.additional_price > 0 %}
+                <div class="text-sm font-semibold text-primary-600 mt-2">
+                  {{ 'restaurant.modifiers.extra_price'|t({'price': size.additional_price}) }}
+                </div>
+              {% elseif size.additional_price == 0 and loop.first %}
+                <div class="text-xs text-green-600 mt-2">
+                  {{ 'restaurant.modifiers.standard'|t }}
+                </div>
+              {% endif %}
+            </div>
+          </label>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+
+  {# === EXTRAS / ADD-ONS === #}
+  {% if product.options.extras and product.options.extras|length > 0 %}
+    <div class="mb-6 extras-options">
+      <label class="block text-lg font-semibold text-gray-900 mb-3">
+        {{ 'restaurant.modifiers.add_extras'|t }}
+        <span class="text-sm font-normal text-gray-500">
+          ({{ 'common.optional'|t }})
+        </span>
+      </label>
+
+      <div class="space-y-2">
+        {% for extra in product.options.extras %}
+          <label class="extra-option flex items-center justify-between p-4 border-2 border-gray-200 rounded-xl cursor-pointer
+                        transition-all duration-200
+                        hover:border-primary-200 hover:bg-gray-50
+                        has-[:checked]:border-primary-400 has-[:checked]:bg-primary-50
+                        has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-primary-500 has-[:focus-visible]:ring-offset-2">
+
+            <div class="flex items-center gap-4 flex-1 min-w-0">
+              <input
+                type="checkbox"
+                name="extras-{{ product.id }}[]"
+                value="{{ extra.id }}"
+                data-modifier-type="extra"
+                data-name="{{ extra.name }}"
+                data-name-en="{{ extra.name_en|default(extra.name) }}"
+                data-price="{{ extra.price }}"
+                {% if extra.required|default(false) %}required data-required="true"{% endif %}
+                class="w-5 h-5 text-primary-600 border-2 border-gray-300 rounded focus:ring-primary-500 focus:ring-offset-0 transition-colors"
+              >
+
+              <div class="flex-1 min-w-0">
+                <div class="font-medium text-gray-900">{{ extra.name }}</div>
+                {% if extra.description %}
+                  <div class="text-sm text-gray-500 mt-0.5">{{ extra.description }}</div>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="flex-shrink-0 text-right ml-4">
+              <div class="text-base font-bold text-primary-600">
+                +{{ extra.price }} {{ 'common.currency'|t }}
+              </div>
+              {% if extra.calories %}
+                <div class="text-xs text-gray-500 mt-0.5">
+                  +{{ extra.calories }} {{ 'common.cal'|t }}
+                </div>
+              {% endif %}
+            </div>
+          </label>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+
+  {# === MODIFICATIONS === #}
+  {% if product.options.modifications and product.options.modifications|length > 0 %}
+    <div class="mb-6 modifications-options">
+      <label class="block text-lg font-semibold text-gray-900 mb-3">
+        {{ 'restaurant.modifiers.modifications'|t }}
+        <span class="text-sm font-normal text-gray-500">
+          ({{ 'restaurant.modifiers.free'|t }})
+        </span>
+      </label>
+
+      <div class="flex flex-wrap gap-2">
+        {% for mod in product.options.modifications %}
+          <label class="modification-tag inline-flex items-center gap-2 px-4 py-2.5 border-2 border-gray-200 rounded-full cursor-pointer
+                        transition-all duration-200
+                        hover:border-primary-300 hover:bg-gray-50
+                        has-[:checked]:border-primary-500 has-[:checked]:bg-primary-100 has-[:checked]:text-primary-900
+                        has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-primary-500 has-[:focus-visible]:ring-offset-2">
+            <input
+              type="checkbox"
+              name="modifications-{{ product.id }}[]"
+              value="{{ mod.id }}"
+              data-modifier-type="modification"
+              data-name="{{ mod.name }}"
+              data-name-en="{{ mod.name_en|default(mod.name) }}"
+              class="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500 focus:ring-offset-0"
+            >
+            <span class="text-sm font-medium">{{ mod.name }}</span>
+            {% if mod.icon %}
+              <i class="{{ mod.icon }} text-sm"></i>
+            {% endif %}
+          </label>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+
+  {# === SPECIAL INSTRUCTIONS === #}
+  {% if allow_instructions %}
+    <div class="mb-6">
+      <label class="block text-lg font-semibold text-gray-900 mb-3">
+        {{ 'restaurant.modifiers.special_requests'|t }}
+        <span class="text-sm font-normal text-gray-500">
+          ({{ 'common.optional'|t }})
+        </span>
+      </label>
+
+      <div class="relative">
+        <textarea
+          name="special_instructions"
+          data-special-instructions
+          rows="3"
+          maxlength="{{ max_instructions }}"
+          placeholder="{{ 'restaurant.add_instructions'|t }}"
+          class="w-full px-4 py-3 border-2 border-gray-300 rounded-xl
+                 focus:ring-2 focus:ring-primary-500 focus:border-primary-500
+                 resize-none transition-colors
+                 placeholder:text-gray-400"
+        ></textarea>
+
+        <div class="flex items-center justify-between mt-2">
+          <span class="text-xs text-gray-500">
+            <i class="sicon-info-circle"></i>
+            {{ 'restaurant.instructions_hint'|t }}
+          </span>
+          <span class="text-xs font-medium text-gray-500 tabular-nums" data-char-counter>
+            0/{{ max_instructions }}
+          </span>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  {# === STICKY FOOTER (Price & Add to Cart) === #}
+  <div class="sticky bottom-0 left-0 right-0 bg-white border-t-2 border-gray-200 pt-4 mt-6 -mx-6 px-6 pb-6 shadow-2xl">
+    {# Price Summary #}
+    <div class="flex items-baseline justify-between mb-4">
+      <span class="text-lg font-semibold text-gray-700">
+        {{ 'cart.total'|t }}
+      </span>
+      <div class="text-right">
+        <div class="text-3xl font-bold text-primary-600 tabular-nums" data-total-price>
+          {{ product.price }} {{ 'common.currency'|t }}
+        </div>
+        {% if product.sale_price %}
+          <div class="text-sm text-gray-400 line-through">
+            {{ product.regular_price }} {{ 'common.currency'|t }}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    {# Add to Cart Button #}
+    <button
+      type="button"
+      data-add-to-cart
+      class="w-full bg-primary-600 hover:bg-primary-700 active:bg-primary-800
+             disabled:bg-gray-300 disabled:cursor-not-allowed
+             text-white font-bold text-lg py-4 px-6 rounded-xl
+             transition-all duration-200
+             flex items-center justify-center gap-3
+             shadow-lg hover:shadow-xl
+             focus:outline-none focus:ring-4 focus:ring-primary-300"
+    >
+      <i class="sicon-shopping-bag text-xl"></i>
+      <span>{{ 'product.add_to_cart'|t }}</span>
+    </button>
+
+    {# Extra Info #}
+    {% if product.delivery_time %}
+      <div class="text-center mt-3 text-sm text-gray-500">
+        <i class="sicon-clock"></i>
+        {{ 'restaurant.ready_in'|t }}: {{ product.delivery_time }}
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{# Inline Styles for Animations (can be moved to SCSS) #}
+<style>
+  .price-updating {
+    animation: pulse 0.2s ease-in-out;
+  }
+
+  .price-changed {
+    animation: price-update 0.3s ease-in-out;
+  }
+
+  @keyframes price-update {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+</style>

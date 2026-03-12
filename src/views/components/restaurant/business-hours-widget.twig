@@ -1,0 +1,190 @@
+{#
+  Business Hours Widget
+  Shows current status and operating hours
+
+  Usage:
+  {% include 'components/restaurant/business-hours-widget.twig' with {
+    show_today_only: false,
+    compact: false
+  } %}
+#}
+
+{% set hours = salla.config.get('business_hours.days', {}) %}
+{% set show_today_only = show_today_only|default(false) %}
+{% set compact = compact|default(false) %}
+{% set show_widget = salla.config.get('show_hours_widget', true) %}
+
+{% if show_widget %}
+  <div class="business-hours-widget" data-business-hours>
+    {% if compact %}
+      {# Compact Mode: Just status badge #}
+      <div class="inline-flex items-center gap-2 px-3 py-2 rounded-full text-sm font-semibold"
+           data-status-badge>
+        <span class="w-2 h-2 rounded-full animate-pulse" data-status-indicator></span>
+        <span data-status-text>{{ 'common.loading'|t }}...</span>
+        <span class="text-xs opacity-75" data-closing-countdown></span>
+      </div>
+    {% else %}
+      {# Full Mode #}
+      <div class="bg-white rounded-xl border-2 border-gray-200 overflow-hidden">
+        {# Current Status Header #}
+        <div class="p-4 border-b border-gray-200" data-status-header>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-3 h-3 rounded-full animate-pulse" data-status-indicator></div>
+              <div>
+                <div class="font-bold text-lg" data-status-text>
+                  {{ 'common.loading'|t }}
+                </div>
+                <div class="text-sm text-gray-600" data-status-detail></div>
+              </div>
+            </div>
+            <i class="sicon-clock text-2xl text-gray-400"></i>
+          </div>
+        </div>
+
+        {# Hours Table #}
+        {% if not show_today_only %}
+          <div class="p-4">
+            <h4 class="text-sm font-semibold text-gray-700 mb-3">
+              {{ 'restaurant.business_hours'|t }}
+            </h4>
+
+            <div class="space-y-2">
+              {% set day_names = {
+                'saturday': 'common.saturday',
+                'sunday': 'common.sunday',
+                'monday': 'common.monday',
+                'tuesday': 'common.tuesday',
+                'wednesday': 'common.wednesday',
+                'thursday': 'common.thursday',
+                'friday': 'common.friday'
+              } %}
+
+              {% for day_key, day_label in day_names %}
+                {% set day_hours = hours[day_key] %}
+                <div class="flex items-center justify-between py-2 border-b border-gray-100 last:border-0"
+                     data-day="{{ day_key }}">
+                  <span class="text-sm font-medium text-gray-700">
+                    {{ day_label|t }}
+                  </span>
+                  <span class="text-sm text-gray-600">
+                    {% if day_hours and day_hours.enabled %}
+                      {{ day_hours.open }} - {{ day_hours.close }}
+                    {% else %}
+                      <span class="text-gray-400">{{ 'restaurant.closed'|t }}</span>
+                    {% endif %}
+                  </span>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+
+  <script type="module">
+  // Initialize business hours widget
+  import BusinessHours from '/assets/js/restaurant/business-hours.js';
+
+  (function() {
+    const widget = document.querySelector('[data-business-hours]');
+    if (!widget) return;
+
+    const businessHours = new BusinessHours();
+
+    const statusBadge = widget.querySelector('[data-status-badge]');
+    const statusIndicator = widget.querySelector('[data-status-indicator]');
+    const statusText = widget.querySelector('[data-status-text]');
+    const statusDetail = widget.querySelector('[data-status-detail]');
+    const closingCountdown = widget.querySelector('[data-closing-countdown]');
+
+    function updateStatus() {
+      const isOpen = businessHours.isOpen();
+
+      if (isOpen) {
+        // Restaurant is OPEN
+        if (statusIndicator) {
+          statusIndicator.classList.remove('bg-red-500');
+          statusIndicator.classList.add('bg-green-500');
+        }
+
+        if (statusBadge) {
+          statusBadge.classList.remove('bg-red-100', 'text-red-800');
+          statusBadge.classList.add('bg-green-100', 'text-green-800');
+        }
+
+        if (statusText) {
+          statusText.textContent = '{{ "restaurant.open_now"|t }}';
+        }
+
+        // Get time until closing
+        const timeUntilClose = businessHours.getTimeUntilClosing();
+
+        if (timeUntilClose && statusDetail) {
+          const locale = document.documentElement.lang === 'ar' ? 'ar-SA' : 'en-US';
+          const closeTimeStr = timeUntilClose.closeTime.toLocaleTimeString(locale, {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: locale === 'en-US'
+          });
+
+          statusDetail.textContent = `{{ "restaurant.closes_at"|t }} ${closeTimeStr}`;
+
+          // Show countdown if closing soon (< 1 hour)
+          if (closingCountdown && timeUntilClose.minutes < 60) {
+            closingCountdown.textContent = `(${timeUntilClose.formatted})`;
+          } else if (closingCountdown) {
+            closingCountdown.textContent = '';
+          }
+        }
+
+      } else {
+        // Restaurant is CLOSED
+        if (statusIndicator) {
+          statusIndicator.classList.remove('bg-green-500');
+          statusIndicator.classList.add('bg-red-500');
+        }
+
+        if (statusBadge) {
+          statusBadge.classList.remove('bg-green-100', 'text-green-800');
+          statusBadge.classList.add('bg-red-100', 'text-red-800');
+        }
+
+        if (statusText) {
+          statusText.textContent = '{{ "restaurant.closed_now"|t }}';
+        }
+
+        // Get next opening
+        const nextOpening = businessHours.getNextOpening();
+
+        if (nextOpening && statusDetail) {
+          statusDetail.textContent = `{{ "restaurant.opens_at"|t }} ${nextOpening.day} ${nextOpening.time}`;
+        }
+
+        if (closingCountdown) {
+          closingCountdown.textContent = '';
+        }
+      }
+    }
+
+    // Initial update
+    updateStatus();
+
+    // Update every minute
+    setInterval(updateStatus, 60000);
+
+    // Highlight current day in hours table
+    const now = new Date();
+    const currentDay = now.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
+    const currentDayRow = widget.querySelector(`[data-day="${currentDay}"]`);
+    if (currentDayRow) {
+      currentDayRow.classList.add('bg-primary-50', 'font-semibold', '-mx-2', 'px-2', 'rounded');
+    }
+
+    // Expose instance
+    widget.businessHours = businessHours;
+  })();
+  </script>
+{% endif %}

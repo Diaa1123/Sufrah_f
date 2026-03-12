@@ -1,0 +1,304 @@
+//
+// Sufrah Business Hours Widget Styles
+// Open/closed status and weekly hours display
+//
+
+.business-hours-widget {
+  @apply font-sans;
+
+  // Smooth transitions
+  * {
+    @apply transition-colors duration-300;
+  }
+}
+
+// === STATUS BADGE (Compact Mode) ===
+[data-status-badge] {
+  @apply inline-flex items-center gap-2;
+  user-select: none;
+
+  // Status indicator dot
+  [data-status-indicator] {
+    @apply flex-shrink-0;
+
+    &.bg-green-500 {
+      animation: pulse-green 2s ease-in-out infinite;
+    }
+
+    &.bg-red-500 {
+      animation: pulse-red 2s ease-in-out infinite;
+    }
+  }
+
+  // Status text
+  [data-status-text] {
+    @apply font-semibold;
+  }
+
+  // Closing countdown
+  [data-closing-countdown] {
+    @apply text-xs opacity-75 font-normal;
+  }
+}
+
+// === STATUS HEADER (Full Mode) ===
+[data-status-header] {
+  @apply relative overflow-hidden;
+
+  // Animated background gradient for open status
+  &.status-open::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-r from-green-50 to-transparent opacity-50;
+    animation: shimmer 3s ease-in-out infinite;
+  }
+
+  // Status indicator dot
+  [data-status-indicator] {
+    @apply flex-shrink-0;
+
+    &.bg-green-500 {
+      @apply shadow-sm shadow-green-300;
+      animation: pulse-green 2s ease-in-out infinite;
+    }
+
+    &.bg-red-500 {
+      @apply shadow-sm shadow-red-300;
+      animation: pulse-red 2s ease-in-out infinite;
+    }
+  }
+
+  // Status text
+  [data-status-text] {
+    @apply font-bold text-lg;
+  }
+
+  // Status detail (closes/opens at)
+  [data-status-detail] {
+    @apply text-sm text-gray-600 mt-0.5;
+  }
+}
+
+// === PULSE ANIMATIONS ===
+@keyframes pulse-green {
+  0%, 100% {
+    opacity: 1;
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+  }
+  50% {
+    opacity: 0.8;
+    box-shadow: 0 0 0 6px rgba(34, 197, 94, 0);
+  }
+}
+
+@keyframes pulse-red {
+  0%, 100% {
+    opacity: 1;
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+  }
+  50% {
+    opacity: 0.8;
+    box-shadow: 0 0 0 6px rgba(239, 68, 68, 0);
+  }
+}
+
+@keyframes shimmer {
+  0%, 100% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  50% {
+    transform: translateX(100%);
+    opacity: 0.5;
+  }
+}
+
+// === HOURS TABLE ===
+.business-hours-widget {
+  // Day row
+  [data-day] {
+    @apply transition-all duration-200;
+
+    &:hover {
+      @apply bg-gray-50 -mx-2 px-2 rounded;
+    }
+
+    // Today highlight
+    &.bg-primary-50 {
+      @apply relative;
+
+      &::before {
+        content: '●';
+        @apply absolute -left-4 text-primary-600 text-xs;
+
+        [dir="rtl"] & {
+          @apply -left-auto -right-4;
+        }
+      }
+    }
+
+    // Day name
+    .text-gray-700 {
+      @apply transition-colors;
+    }
+
+    // Hours text
+    .text-gray-600 {
+      @apply tabular-nums;
+    }
+
+    // Closed state
+    .text-gray-400 {
+      @apply italic;
+    }
+  }
+}
+
+// === RESPONSIVE ADJUSTMENTS ===
+@media (max-width: 640px) {
+  .business-hours-widget {
+    [data-status-badge] {
+      @apply text-xs px-2 py-1.5;
+
+      .w-2 {
+        @apply w-1.5 h-1.5;
+      }
+    }
+
+    [data-status-header] {
+      @apply p-3;
+
+      [data-status-text] {
+        @apply text-base;
+      }
+
+      [data-status-detail] {
+        @apply text-xs;
+      }
+    }
+
+    [data-day] {
+      @apply py-1.5 text-xs;
+    }
+  }
+}
+
+// === RTL SUPPORT ===
+[dir="rtl"] {
+  .business-hours-widget {
+    [data-status-badge] {
+      flex-direction: row-reverse;
+    }
+
+    [data-status-header] {
+      .flex {
+        flex-direction: row-reverse;
+      }
+    }
+
+    [data-day] {
+      .flex {
+        flex-direction: row-reverse;
+      }
+    }
+  }
+}
+
+// === PRINT STYLES ===
+@media print {
+  .business-hours-widget {
+    @apply border-gray-400;
+
+    [data-status-badge],
+    [data-status-indicator] {
+      @apply hidden;
+    }
+
+    [data-status-header] {
+      @apply bg-white border-2 border-gray-400;
+    }
+
+    [data-day] {
+      @apply py-2 border-b border-gray-300;
+    }
+  }
+}
+
+// === ACCESSIBILITY ===
+// High contrast mode
+@media (prefers-contrast: high) {
+  .business-hours-widget {
+    [data-status-indicator].bg-green-500 {
+      @apply bg-green-700 border-2 border-green-900;
+    }
+
+    [data-status-indicator].bg-red-500 {
+      @apply bg-red-700 border-2 border-red-900;
+    }
+  }
+}
+
+// Reduced motion
+@media (prefers-reduced-motion: reduce) {
+  .business-hours-widget {
+    [data-status-indicator],
+    [data-status-header]::before {
+      animation: none !important;
+    }
+
+    * {
+      transition: none !important;
+    }
+  }
+}
+
+// === DARK MODE SUPPORT ===
+@media (prefers-color-scheme: dark) {
+  .business-hours-widget {
+    .bg-white {
+      @apply bg-gray-800;
+    }
+
+    .border-gray-200 {
+      @apply border-gray-700;
+    }
+
+    .text-gray-900,
+    .text-gray-700 {
+      @apply text-gray-100;
+    }
+
+    .text-gray-600 {
+      @apply text-gray-300;
+    }
+
+    .text-gray-400 {
+      @apply text-gray-500;
+    }
+
+    [data-status-badge] {
+      &.bg-green-100 {
+        @apply bg-green-900;
+      }
+
+      &.bg-red-100 {
+        @apply bg-red-900;
+      }
+    }
+  }
+}
+
+// === LOADING STATE ===
+.business-hours-widget {
+  &.loading {
+    @apply opacity-60 pointer-events-none;
+
+    [data-status-text] {
+      animation: shimmer-text 1.5s ease-in-out infinite;
+    }
+  }
+}
+
+@keyframes shimmer-text {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}

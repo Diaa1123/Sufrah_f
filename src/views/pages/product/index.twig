@@ -1,78 +1,369 @@
-{#
-| Variable                   | Type        | Description                                                          |
-|----------------------------|-------------|----------------------------------------------------------------------|
-| page                       | object      |                                                                      |
-| page.title                 | string      | *could be html                                                       |
-| page.slug                  | string      | ex: "cat.show"                                                       |
-| category                   | ?Category   |                                                                      |
-| category.name              | string      |                                                                      |
-| category.url               | string      |                                                                      |
-| category.sub_categories    | ?Category[] |                                                                      |
-| category.image             | ?string     |                                                                      |
-| filters                     | bool        | is filters allowed here or not                                        |
-| sort_options[]             | SortList[]  |                                                                      |
-| sort_options[].id          | string      | ourSuggest, bestSell, topRated, priceFromTopToLow, priceFromLowToTop |
-| sort_options[].name        | string      |                                                                      |
-| sort_options[].is_selected | bool        | Is current page sorted by it                                         |
-| search_query               | ?string     |                                                                      |
-#}
-{% extends "layouts.master" %}
+{% extends "layouts/master.twig" %}
+
 {% block content %}
-    <div class="container px-2.5 ms:px-5 mb-10">
-        {# add breadcumbs container in pages to make a space in case breadcrumbs is off #}
-        <nav class="breadcrumbs w-full py-5">
-            <salla-breadcrumb></salla-breadcrumb>
-        </nav>
-        <div class="flex items-start flex-col md:flex-row">
-            {% if filters %}
-                <button class="btn--close-sm close-filters sicon-cancel hidden"></button>
-                <salla-filters class="md:w-72 lg:sticky lg:top-20 flex-none" id="filters-menu"></salla-filters>
-            {% endif %}
 
-            <div class="main-content flex-1 w-full {{ filters ? 'ltr:lg:ml-8 rtl:lg:mr-8' : '' }}">
-                <div class="mb-4 sm:mb-6 flex justify-between items-center">
-                    <h1 class="font-bold text-xl rtl:pl-3 ltr:pr-3" id="page-main-title">{{ page.title|raw }}</h1>
-                    <div class="flex items-center space-x-2 rtl:space-x-reverse">
-                        {% if filters %}
-                            <a href="#filters-menu"
-                               class="filters-trigger bg-border-color text-primary lg:hidden mt-2">
-                                <i class="sicon-filter text-gray-text text-2xl me-2.5"></i>
-                            </a>
-                        {% endif %}
-                        {% if sort_options|length %}
-                            <div class="flex items-center">
-                                <label class="hidden sm:block rtl:ml-3 ltr:mr-3 whitespace-nowrap"
-                                       for="product-filter">{{ trans('pages.categories.sorting') }}</label>
-                                <select id="product-filter" class="form-input pt-0 pb-1 rtl:md:pl-10 ltr:md:pr-10">
-                                    {% for sort in sort_options %}
-                                        <option value="{{ sort.id }}" {{ sort.is_selected?'selected':'' }}>{{ sort.name }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                        {% endif %}
-                    </div>
+<div class="products-listing-page bg-gray-50 min-h-screen py-8">
+  <div class="container mx-auto px-4">
 
-                </div>
+    {# Breadcrumb #}
+    <nav class="mb-6">
+      <salla-breadcrumb></salla-breadcrumb>
+    </nav>
 
-                {% hook 'product:index.items.start' %}
-                <div class="flex min-h-screen">
-                    <salla-products-list class="flex-1 min-w-0 overflow-auto "
-                        source="{{ page.slug }}"
-                        source-value="{{ page.id }}"
-                        {{ filters ?'filters-Results':'' }}>
-					          </salla-products-list>
-                </div>
-                {% hook 'product:index.items.end' %}
+    <div class="flex flex-col lg:flex-row gap-8">
+
+      {# === SIDEBAR FILTERS === #}
+      <aside class="lg:w-64 flex-shrink-0">
+        <div class="bg-white rounded-xl p-6 shadow-sm lg:sticky lg:top-24">
+
+          {# Filters Header #}
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="font-bold text-lg">{{ 'products.filters'|t }}</h3>
+            <button
+              onclick="clearFilters()"
+              class="text-sm text-primary-600 hover:text-primary-700"
+            >
+              {{ 'common.clear_all'|t }}
+            </button>
+          </div>
+
+          {# Categories Filter #}
+          <div class="mb-6 pb-6 border-b border-gray-200">
+            <h4 class="font-semibold text-sm text-gray-700 mb-3">
+              {{ 'products.categories'|t }}
+            </h4>
+            <ul class="space-y-2">
+              <li>
+                <a
+                  href="{{ salla.url.get('products') }}"
+                  class="flex items-center justify-between text-sm hover:text-primary-600 transition-colors
+                         {{ not category ? 'text-primary-600 font-semibold' : 'text-gray-600' }}"
+                >
+                  <span>{{ 'products.all_products'|t }}</span>
+                  <span class="text-xs text-gray-400">({{ salla.product.count() }})</span>
+                </a>
+              </li>
+              {% for cat in salla.category.getAll() %}
+                <li>
+                  <a
+                    href="{{ cat.url }}"
+                    class="flex items-center justify-between text-sm hover:text-primary-600 transition-colors
+                           {{ category.id == cat.id ? 'text-primary-600 font-semibold' : 'text-gray-600' }}"
+                  >
+                    <span>{{ cat.name }}</span>
+                    <span class="text-xs text-gray-400">({{ cat.products_count }})</span>
+                  </a>
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+
+          {# Salla Filters Component (if available) #}
+          {% if filters %}
+            <div class="salla-filters-wrapper">
+              <salla-filters id="filters-menu"></salla-filters>
             </div>
+          {% endif %}
+
+          {# Price Range Filter #}
+          <div class="mb-6 pb-6 border-b border-gray-200">
+            <h4 class="font-semibold text-sm text-gray-700 mb-3">
+              {{ 'products.price_range'|t }}
+            </h4>
+            <div class="space-y-2">
+              <label class="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 cursor-pointer">
+                <input type="checkbox" name="price" value="0-50" class="rounded text-primary-600">
+                <span>{{ 'common.less_than'|t }} 50 {{ 'common.currency'|t }}</span>
+              </label>
+              <label class="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 cursor-pointer">
+                <input type="checkbox" name="price" value="50-100" class="rounded text-primary-600">
+                <span>50 - 100 {{ 'common.currency'|t }}</span>
+              </label>
+              <label class="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 cursor-pointer">
+                <input type="checkbox" name="price" value="100-200" class="rounded text-primary-600">
+                <span>100 - 200 {{ 'common.currency'|t }}</span>
+              </label>
+              <label class="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 cursor-pointer">
+                <input type="checkbox" name="price" value="200+" class="rounded text-primary-600">
+                <span>{{ 'common.more_than'|t }} 200 {{ 'common.currency'|t }}</span>
+              </label>
+            </div>
+          </div>
+
+          {# Special Filters #}
+          <div class="mb-6">
+            <h4 class="font-semibold text-sm text-gray-700 mb-3">
+              {{ 'products.special'|t }}
+            </h4>
+            <div class="space-y-2">
+              <label class="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 cursor-pointer">
+                <input type="checkbox" name="special" value="sale" class="rounded text-primary-600">
+                <span>{{ 'products.on_sale'|t }}</span>
+              </label>
+              <label class="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 cursor-pointer">
+                <input type="checkbox" name="special" value="new" class="rounded text-primary-600">
+                <span>{{ 'products.new_items'|t }}</span>
+              </label>
+              <label class="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 cursor-pointer">
+                <input type="checkbox" name="special" value="featured" class="rounded text-primary-600">
+                <span>{{ 'products.featured'|t }}</span>
+              </label>
+            </div>
+          </div>
+
         </div>
+
+        {# Mobile Filters Toggle #}
+        {% if filters %}
+          <button class="btn--close-sm close-filters sicon-cancel hidden"></button>
+          <a href="#filters-menu" class="filters-trigger lg:hidden fixed bottom-6 right-6 z-40 bg-primary-600 text-white w-14 h-14 rounded-full shadow-xl flex items-center justify-center">
+            <i class="sicon-filter text-2xl"></i>
+          </a>
+        {% endif %}
+      </aside>
+
+      {# === MAIN PRODUCTS AREA === #}
+      <main class="flex-1">
+
+        {# Header with Sorting #}
+        <div class="bg-white rounded-xl p-4 mb-6 shadow-sm">
+          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+
+            {# Title & Count #}
+            <div>
+              <h1 class="text-2xl font-bold text-gray-900 mb-1" id="page-main-title">
+                {{ page.title|raw }}
+              </h1>
+              <p class="text-sm text-gray-600">
+                <span id="products-count">{{ 'common.loading'|t }}...</span>
+              </p>
+            </div>
+
+            {# View Toggle & Sort #}
+            <div class="flex items-center gap-3">
+
+              {# View Toggle #}
+              <div class="hidden md:flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+                <button
+                  onclick="setView('grid')"
+                  class="view-toggle-btn active px-3 py-1.5 rounded-md transition-colors"
+                  data-view="grid"
+                  aria-label="{{ 'products.grid_view'|t }}"
+                >
+                  <i class="sicon-grid"></i>
+                </button>
+                <button
+                  onclick="setView('list')"
+                  class="view-toggle-btn px-3 py-1.5 rounded-md transition-colors"
+                  data-view="list"
+                  aria-label="{{ 'products.list_view'|t }}"
+                >
+                  <i class="sicon-list"></i>
+                </button>
+              </div>
+
+              {# Sort Dropdown #}
+              {% if sort_options|length %}
+                <select
+                  id="product-filter"
+                  class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                >
+                  {% for sort in sort_options %}
+                    <option value="{{ sort.id }}" {{ sort.is_selected ? 'selected' : '' }}>
+                      {{ sort.name }}
+                    </option>
+                  {% endfor %}
+                </select>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        {# Products Grid/List #}
+        {% hook 'product:index.items.start' %}
+        <div class="products-container">
+          <salla-products-list
+            class="products-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"
+            source="{{ page.slug }}"
+            source-value="{{ page.id }}"
+            {{ filters ? 'filters-results' : '' }}
+          >
+          </salla-products-list>
+        </div>
+        {% hook 'product:index.items.end' %}
+
+      </main>
     </div>
+  </div>
+</div>
 
+{# Testimonials Section #}
+{% if store.settings.category.testimonial_enabled %}
+  {% component 'home.testimonials' %}
+{% endif %}
 
-    {% if store.settings.category.testimonial_enabled %}
-        {% component 'home.testimonials' %}
-    {% endif %}
 {% endblock %}
 
 {% block scripts %}
-    <script defer src="{{ 'product.js' | asset }}"></script>
+<script defer src="{{ 'product.js' | asset }}"></script>
+<script>
+// View toggle functionality
+function setView(view) {
+  const grid = document.querySelector('.products-grid');
+  const buttons = document.querySelectorAll('.view-toggle-btn');
+
+  if (!grid) return;
+
+  buttons.forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.view === view);
+  });
+
+  if (view === 'list') {
+    grid.classList.remove('sm:grid-cols-2', 'lg:grid-cols-3');
+    grid.classList.add('grid-cols-1');
+    grid.classList.add('list-view');
+  } else {
+    grid.classList.remove('list-view');
+    grid.classList.add('grid-cols-1', 'sm:grid-cols-2', 'lg:grid-cols-3');
+  }
+
+  localStorage.setItem('products_view', view);
+}
+
+// Clear filters
+function clearFilters() {
+  const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+  checkboxes.forEach(cb => cb.checked = false);
+  window.location.href = window.location.pathname;
+}
+
+// Restore view preference
+document.addEventListener('DOMContentLoaded', () => {
+  const savedView = localStorage.getItem('products_view') || 'grid';
+  setView(savedView);
+
+  // Update products count when products load
+  updateProductsCount();
+});
+
+// Filter change handlers
+document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+  checkbox.addEventListener('change', () => {
+    applyFilters();
+  });
+});
+
+function applyFilters() {
+  const url = new URL(window.location.href);
+  const params = new URLSearchParams();
+
+  // Get checked filters
+  document.querySelectorAll('input[name="price"]:checked').forEach(cb => {
+    params.append('price[]', cb.value);
+  });
+
+  document.querySelectorAll('input[name="special"]:checked').forEach(cb => {
+    params.append('special[]', cb.value);
+  });
+
+  // Update URL with filters
+  if (params.toString()) {
+    window.location.href = `${window.location.pathname}?${params.toString()}`;
+  } else {
+    window.location.href = window.location.pathname;
+  }
+}
+
+// Update products count
+function updateProductsCount() {
+  const productsList = document.querySelector('salla-products-list');
+  if (productsList) {
+    productsList.addEventListener('products-loaded', (event) => {
+      const count = event.detail?.count || 0;
+      const countElement = document.getElementById('products-count');
+      if (countElement) {
+        countElement.textContent = `${count} {{ 'products.products_found'|t }}`;
+      }
+    });
+  }
+}
+
+// Mobile filters toggle
+const filtersTrigger = document.querySelector('.filters-trigger');
+const closeFilters = document.querySelector('.close-filters');
+const filtersMenu = document.querySelector('#filters-menu');
+
+if (filtersTrigger && filtersMenu) {
+  filtersTrigger.addEventListener('click', (e) => {
+    e.preventDefault();
+    filtersMenu.classList.add('filters-open');
+    if (closeFilters) closeFilters.classList.remove('hidden');
+  });
+}
+
+if (closeFilters && filtersMenu) {
+  closeFilters.addEventListener('click', () => {
+    filtersMenu.classList.remove('filters-open');
+    closeFilters.classList.add('hidden');
+  });
+}
+</script>
+
+<style>
+.view-toggle-btn.active {
+  @apply bg-white shadow-sm text-primary-600;
+}
+
+.view-toggle-btn:not(.active) {
+  @apply text-gray-500 hover:text-gray-700;
+}
+
+/* List view styles */
+.products-grid.list-view .dish-card {
+  @apply flex flex-row;
+}
+
+.products-grid.list-view .dish-card .dish-image {
+  @apply w-48 h-48 flex-shrink-0;
+}
+
+.products-grid.list-view .dish-card > a {
+  @apply flex flex-row w-full;
+}
+
+/* Mobile filters */
+@media (max-width: 1024px) {
+  .lg\:w-64 {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    height: 100vh;
+    width: 320px;
+    max-width: 90vw;
+    z-index: 50;
+    background: white;
+    overflow-y: auto;
+    transition: right 0.3s ease;
+  }
+
+  .lg\:w-64.filters-open {
+    right: 0;
+  }
+
+  .close-filters {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 51;
+    background: white;
+    border-radius: 50%;
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+}
+</style>
 {% endblock %}

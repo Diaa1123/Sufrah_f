@@ -1,0 +1,205 @@
+{#
+  Dish Card Component
+  Reusable product card for restaurant items
+
+  Usage:
+  {% include 'components/restaurant/dish-card.twig' with {
+    product: product,
+    show_quick_view: true
+  } %}
+#}
+
+{% set show_quick_view = show_quick_view|default(true) %}
+{% set show_calories = salla.config.get('show_calories', true) %}
+
+<div class="dish-card bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 group">
+  <a href="{{ product.url }}" class="block">
+    {# Image Container #}
+    <div class="dish-image relative h-56 bg-gray-100 overflow-hidden">
+      {% if product.image %}
+        <img
+          src="{{ product.image.url }}"
+          alt="{{ product.name }}"
+          class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+          loading="lazy"
+        >
+      {% else %}
+        <div class="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
+          <i class="sicon-food-dome text-gray-400 text-6xl"></i>
+        </div>
+      {% endif %}
+
+      {# Overlay Gradient #}
+      <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+      {# Badges #}
+      <div class="absolute top-3 right-3 flex flex-col gap-2">
+        {# Sale Badge #}
+        {% if product.sale_price %}
+          <span class="bg-accent-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
+            {{ 'products.sale'|t }}
+          </span>
+        {% endif %}
+
+        {# New Badge #}
+        {% if product.is_new %}
+          <span class="bg-secondary-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
+            {{ 'products.new'|t }}
+          </span>
+        {% endif %}
+
+        {# Spicy Badge #}
+        {% if product.spicy_level %}
+          <span class="bg-accent-500 text-white text-xs font-bold px-2 py-1.5 rounded-full shadow-lg flex items-center gap-1">
+            {% for i in 1..product.spicy_level %}
+              <i class="sicon-hot text-xs"></i>
+            {% endfor %}
+          </span>
+        {% endif %}
+      </div>
+
+      {# Quick Actions #}
+      <div class="absolute bottom-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        {# Quick View #}
+        {% if show_quick_view %}
+          <button
+            onclick="openQuickView({{ product.id }}); event.preventDefault();"
+            class="w-10 h-10 bg-white hover:bg-gray-100 rounded-full shadow-lg
+                   flex items-center justify-center
+                   transform hover:scale-110 transition-transform"
+            aria-label="{{ 'products.quick_view'|t }}"
+          >
+            <i class="sicon-eye text-gray-700"></i>
+          </button>
+        {% endif %}
+
+        {# Add to Wishlist #}
+        <button
+          onclick="toggleWishlist({{ product.id }}); event.preventDefault();"
+          class="w-10 h-10 bg-white hover:bg-gray-100 rounded-full shadow-lg
+                 flex items-center justify-center
+                 transform hover:scale-110 transition-transform"
+          aria-label="{{ 'products.add_to_wishlist'|t }}"
+        >
+          <i class="sicon-heart text-gray-700"></i>
+        </button>
+      </div>
+    </div>
+
+    {# Content #}
+    <div class="p-4">
+      {# Product Name #}
+      <h3 class="font-bold text-lg text-gray-900 mb-2 line-clamp-2 group-hover:text-primary-600 transition-colors">
+        {{ product.name }}
+      </h3>
+
+      {# Description #}
+      {% if product.description %}
+        <p class="text-sm text-gray-600 mb-3 line-clamp-2">
+          {{ product.description }}
+        </p>
+      {% endif %}
+
+      {# Meta Info #}
+      <div class="flex flex-wrap items-center gap-3 mb-4 text-sm text-gray-500">
+        {# Calories #}
+        {% if show_calories and product.calories %}
+          <div class="flex items-center gap-1.5">
+            <i class="sicon-fire text-accent-500"></i>
+            <span>{{ product.calories }} {{ 'common.cal'|t }}</span>
+          </div>
+        {% endif %}
+
+        {# Prep Time #}
+        {% if product.preparation_time %}
+          <div class="flex items-center gap-1.5">
+            <i class="sicon-clock text-gray-400"></i>
+            <span>{{ product.preparation_time }} {{ 'common.min'|t }}</span>
+          </div>
+        {% endif %}
+      </div>
+
+      {# Price & CTA #}
+      <div class="flex items-center justify-between">
+        <div class="flex flex-col">
+          <div class="flex items-baseline gap-2">
+            <span class="text-2xl font-bold text-primary-600">
+              {{ product.price }} {{ 'common.currency'|t }}
+            </span>
+            {% if product.sale_price %}
+              <span class="text-sm text-gray-400 line-through">
+                {{ product.regular_price }} {{ 'common.currency'|t }}
+              </span>
+            {% endif %}
+          </div>
+          {% if product.sale_price %}
+            {% set discount_percent = ((product.regular_price - product.price) / product.regular_price * 100)|round %}
+            <span class="text-xs text-accent-600 font-semibold">
+              {{ 'products.save'|t }} {{ discount_percent }}%
+            </span>
+          {% endif %}
+        </div>
+
+        {# Add to Cart Button #}
+        <button
+          onclick="quickAddToCart({{ product.id }}); event.preventDefault();"
+          class="w-12 h-12 bg-primary-600 hover:bg-primary-700 text-white rounded-xl
+                 flex items-center justify-center
+                 shadow-lg hover:shadow-xl
+                 transform hover:scale-110 active:scale-95
+                 transition-all duration-200"
+          aria-label="{{ 'product.add_to_cart'|t }}"
+        >
+          <i class="sicon-shopping-bag text-xl"></i>
+        </button>
+      </div>
+    </div>
+  </a>
+</div>
+
+<script>
+// Quick add to cart (for simple products without required options)
+function quickAddToCart(productId) {
+  // Check if product has required options
+  fetch(`/api/products/${productId}`)
+    .then(response => response.json())
+    .then(product => {
+      if (product.has_required_options) {
+        // Redirect to product page
+        window.location.href = product.url;
+      } else {
+        // Add directly to cart
+        salla.cart.addItem({
+          id: productId,
+          quantity: 1
+        }).then(() => {
+          salla.notify.success('{{ "product.added_to_cart"|t }}');
+        }).catch(error => {
+          salla.notify.error(error.message);
+        });
+      }
+    });
+}
+
+// Quick view modal
+function openQuickView(productId) {
+  // Implementation depends on modal system
+  console.log('Open quick view for product:', productId);
+  // This would typically open a modal with the modifiers component
+}
+
+// Toggle wishlist
+function toggleWishlist(productId) {
+  salla.wishlist.toggle(productId)
+    .then(response => {
+      if (response.added) {
+        salla.notify.success('{{ "products.added_to_wishlist"|t }}');
+      } else {
+        salla.notify.info('{{ "products.removed_from_wishlist"|t }}');
+      }
+    })
+    .catch(error => {
+      salla.notify.error(error.message);
+    });
+}
+</script>

@@ -1,0 +1,141 @@
+//
+// Sufrah Modifiers System Styles
+// Restaurant-specific component styling
+//
+
+.modifiers-container {
+  @apply max-w-3xl mx-auto;
+
+  // Ensure smooth animations
+  * {
+    @apply transition-colors duration-200;
+  }
+}
+
+// === SIZE OPTIONS ===
+.size-option {
+  user-select: none;
+
+  input:checked + div {
+    @apply transform scale-[1.02];
+  }
+
+  &:active input + div {
+    @apply transform scale-[0.98];
+  }
+}
+
+// === EXTRA OPTIONS ===
+.extra-option {
+  user-select: none;
+
+  &:hover {
+    @apply shadow-sm transform translate-x-[-2px];
+  }
+
+  input:checked ~ div {
+    @apply font-semibold;
+  }
+}
+
+// === MODIFICATION TAGS ===
+.modification-tag {
+  user-select: none;
+  white-space: nowrap;
+
+  &:hover {
+    @apply transform scale-105;
+  }
+
+  &:active {
+    @apply transform scale-95;
+  }
+}
+
+// === PRICE DISPLAY ===
+[data-total-price] {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+
+  &.price-updating {
+    @apply opacity-70;
+  }
+
+  &.price-changed {
+    animation: price-bump 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+}
+
+@keyframes price-bump {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+// === INSTRUCTIONS TEXTAREA ===
+[data-special-instructions] {
+  &:focus {
+    @apply outline-none shadow-lg;
+  }
+
+  &::placeholder {
+    @apply italic;
+  }
+}
+
+// === CHARACTER COUNTER ===
+[data-char-counter] {
+  font-variant-numeric: tabular-nums;
+
+  &.text-amber-600 {
+    animation: pulse 1s ease-in-out infinite;
+  }
+}
+
+// === LOADING STATE ===
+.modifiers-loading {
+  &:not(.hidden) {
+    animation: fadeIn 0.2s ease-in-out;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+// === RTL SUPPORT ===
+[dir="rtl"] {
+  .extra-option:hover {
+    @apply transform translate-x-[2px];
+  }
+}
+
+// === MOBILE OPTIMIZATIONS ===
+@media (max-width: 640px) {
+  .modifiers-container {
+    @apply px-4;
+  }
+
+  .size-option div {
+    @apply p-3 text-sm;
+  }
+
+  .extra-option {
+    @apply p-3;
+  }
+
+  [data-total-price] {
+    @apply text-2xl;
+  }
+}
+
+// === PRINT STYLES ===
+@media print {
+  .modifiers-container {
+    [data-add-to-cart],
+    [data-special-instructions] {
+      @apply hidden;
+    }
+  }
+}

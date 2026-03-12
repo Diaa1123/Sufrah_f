@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(time pnpm run build)",
+      "Bash(tee build-output.log)",
+      "Bash(pnpm run format:check)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -1,0 +1,284 @@
+//
+// Sufrah Order Scheduling Widget Styles
+// ASAP and scheduled delivery selection
+//
+
+.order-scheduling-widget {
+  @apply transition-all duration-300;
+
+  &:hover {
+    @apply shadow-md;
+  }
+}
+
+// === SCHEDULING TYPE OPTIONS ===
+.scheduling-type-option {
+  user-select: none;
+
+  input:checked + div {
+    @apply transform scale-[1.02];
+    animation: selectBounce 0.3s ease-out;
+  }
+
+  &:active input + div {
+    @apply transform scale-[0.98];
+  }
+
+  // Hover effect
+  div {
+    @apply relative overflow-hidden;
+
+    &::before {
+      content: '';
+      @apply absolute inset-0 bg-gradient-to-br from-white/50 to-transparent;
+      @apply opacity-0 transition-opacity duration-300;
+    }
+
+    &:hover::before {
+      @apply opacity-100;
+    }
+  }
+
+  // Icon animation on selection
+  input:checked + div i {
+    animation: iconPulse 0.5s ease-in-out;
+  }
+}
+
+@keyframes selectBounce {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1.02); }
+}
+
+@keyframes iconPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+// === ASAP SECTION ===
+.asap-section {
+  animation: fadeIn 0.3s ease-in-out;
+
+  &.hidden {
+    @apply hidden;
+  }
+
+  [data-asap-estimate] {
+    @apply min-h-[80px] flex items-center justify-center;
+
+    // Loading spinner
+    .sicon-loader {
+      animation: spin 1s linear infinite;
+    }
+
+    // Estimate display
+    .sicon-clock {
+      animation: tickTock 2s ease-in-out infinite;
+    }
+  }
+}
+
+@keyframes tickTock {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-10deg); }
+  75% { transform: rotate(10deg); }
+}
+
+// === SCHEDULED SECTION ===
+.scheduled-section {
+  animation: fadeIn 0.3s ease-in-out;
+
+  &.hidden {
+    @apply hidden;
+  }
+}
+
+// === DATE & TIME PICKERS ===
+[data-date-picker],
+[data-time-picker] {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  background-position: left 0.75rem center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  padding-left: 2.5rem;
+
+  [dir="rtl"] & {
+    background-position: right 0.75rem center;
+    padding-left: 1rem;
+    padding-right: 2.5rem;
+  }
+
+  &:focus {
+    @apply outline-none shadow-lg;
+  }
+
+  &:disabled {
+    @apply bg-gray-100 cursor-not-allowed opacity-60;
+  }
+
+  option {
+    @apply py-2;
+
+    &:disabled {
+      @apply text-gray-400;
+    }
+  }
+}
+
+// === CLOSED MESSAGE ===
+[data-closed-message] {
+  animation: slideDown 0.4s ease-out;
+
+  &.hidden {
+    @apply hidden;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// === INFO BOX ===
+.bg-blue-50.border-blue-200 {
+  @apply relative;
+
+  &::before {
+    content: '';
+    @apply absolute left-0 top-0 bottom-0 w-1 bg-blue-500 rounded-l-lg;
+  }
+
+  [dir="rtl"] &::before {
+    @apply left-auto right-0 rounded-l-none rounded-r-lg;
+  }
+}
+
+// === FADE IN ANIMATION ===
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+// === RESPONSIVE ADJUSTMENTS ===
+@media (max-width: 640px) {
+  .order-scheduling-widget {
+    @apply rounded-lg;
+
+    .p-4 {
+      @apply p-3;
+    }
+
+    h3 {
+      @apply text-base;
+    }
+
+    p {
+      @apply text-xs;
+    }
+
+    .grid-cols-2 {
+      @apply gap-2;
+    }
+
+    .scheduling-type-option div {
+      @apply p-3;
+
+      i {
+        @apply text-2xl;
+      }
+
+      .font-bold {
+        @apply text-sm;
+      }
+
+      .text-xs {
+        @apply text-[10px];
+      }
+    }
+  }
+
+  [data-date-picker],
+  [data-time-picker] {
+    @apply py-2 text-sm;
+  }
+}
+
+// === RTL SUPPORT ===
+[dir="rtl"] {
+  .flex {
+    flex-direction: row-reverse;
+  }
+}
+
+// === PRINT STYLES ===
+@media print {
+  .order-scheduling-widget {
+    @apply border-gray-400;
+
+    .scheduling-type-option:not(:has(input:checked)) {
+      @apply hidden;
+    }
+
+    [data-asap-section],
+    [data-scheduled-section] {
+      @apply border-2 border-gray-400 p-4;
+    }
+  }
+}
+
+// === ACCESSIBILITY ===
+[data-date-picker]:focus-visible,
+[data-time-picker]:focus-visible {
+  @apply ring-4 ring-primary-300 ring-offset-2;
+}
+
+// High contrast mode
+@media (prefers-contrast: high) {
+  .order-scheduling-widget {
+    @apply border-black;
+
+    [data-date-picker],
+    [data-time-picker] {
+      @apply border-black;
+    }
+  }
+}
+
+// Reduced motion
+@media (prefers-reduced-motion: reduce) {
+  .scheduling-type-option input:checked + div,
+  .asap-section,
+  .scheduled-section,
+  [data-closed-message],
+  .sicon-loader,
+  .sicon-clock {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+// === LOADING STATE ===
+.sicon-loader {
+  @apply inline-block;
+}
+
+// === TIME ESTIMATE HIGHLIGHT ===
+[data-asap-estimate] {
+  .text-xl {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+  }
+}

@@ -1,14 +1,366 @@
-{#
-| Variable         | Type       | Description                                                         |
-|------------------|------------|---------------------------------------------------------------------|
-| page             | object     |                                                                     |
-| page.title       | string     | *could be html                                                      |
-| page.slug        | string     | ex: "cat.show"                                                      |
-#}
-{% extends "layouts.master" %}
+{% extends "layouts/master.twig" %}
+
 {% block content %}
-    {% component home %}
+
+{# === HERO SECTION === #}
+<section class="hero-section relative overflow-hidden">
+  <div class="hero-background absolute inset-0">
+    {% if salla.config.get('hero_image_url') %}
+      <img
+        src="{{ salla.config.get('hero_image_url') }}"
+        alt="{{ salla.config.get('restaurant.name') }}"
+        class="w-full h-full object-cover"
+        loading="eager"
+      >
+      <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70"></div>
+    {% else %}
+      <div class="w-full h-full bg-gradient-to-br from-primary-900 via-primary-800 to-secondary-900"></div>
+    {% endif %}
+  </div>
+
+  <div class="hero-content relative z-10 container mx-auto px-4 py-20 md:py-32">
+    <div class="max-w-3xl">
+      {# Restaurant Logo/Badge #}
+      {% if salla.config.get('restaurant_logo') %}
+        <div class="mb-6 animate-fade-in">
+          <img
+            src="{{ salla.config.get('restaurant_logo') }}"
+            alt="{{ salla.config.get('restaurant.name') }}"
+            class="h-20 md:h-24 w-auto"
+          >
+        </div>
+      {% endif %}
+
+      {# Main Heading #}
+      <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 animate-slide-up">
+        {{ salla.config.get('restaurant.name') }}
+      </h1>
+
+      {# Description #}
+      <p class="text-xl md:text-2xl text-white/90 mb-8 leading-relaxed animate-slide-up animation-delay-200">
+        {{ salla.config.get('restaurant.description') }}
+      </p>
+
+      {# Business Hours Badge (Compact) #}
+      <div class="mb-8 animate-slide-up animation-delay-400">
+        {% include 'components/restaurant/business-hours-widget.twig' with {
+          show_today_only: true,
+          compact: true
+        } %}
+      </div>
+
+      {# CTA Buttons #}
+      <div class="flex flex-wrap gap-4 animate-slide-up animation-delay-600">
+        <a
+          href="{{ salla.url.get('products') }}"
+          class="inline-flex items-center gap-3 bg-primary-600 hover:bg-primary-700
+                 text-white font-bold text-lg px-8 py-4 rounded-xl
+                 shadow-xl hover:shadow-2xl transform hover:scale-105
+                 transition-all duration-200"
+        >
+          <i class="sicon-book-open text-2xl"></i>
+          <span>{{ 'restaurant.browse_menu'|t }}</span>
+        </a>
+
+        {% if salla.config.get('restaurant.phone') %}
+          <a
+            href="tel:{{ salla.config.get('restaurant.phone') }}"
+            class="inline-flex items-center gap-3 bg-white/10 backdrop-blur-sm hover:bg-white/20
+                   text-white font-semibold text-lg px-8 py-4 rounded-xl border-2 border-white/30
+                   transition-all duration-200"
+          >
+            <i class="sicon-phone text-2xl"></i>
+            <span>{{ 'common.call_us'|t }}</span>
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  {# Scroll Indicator #}
+  <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+    <i class="sicon-chevron-down text-white text-3xl opacity-75"></i>
+  </div>
+</section>
+
+{# === FEATURED CATEGORIES === #}
+<section class="py-16 bg-gray-50">
+  <div class="container mx-auto px-4">
+    <div class="text-center mb-12">
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+        {{ 'restaurant.our_categories'|t }}
+      </h2>
+      <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+        {{ 'restaurant.categories_description'|t }}
+      </p>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+      {% for category in salla.category.getAll() limit:8 %}
+        <a
+          href="{{ category.url }}"
+          class="category-card group relative h-48 md:h-56 rounded-2xl overflow-hidden
+                 shadow-lg hover:shadow-2xl transform hover:scale-105
+                 transition-all duration-300"
+        >
+          {# Category Image #}
+          <div class="absolute inset-0">
+            {% if category.image %}
+              <img
+                src="{{ category.image }}"
+                alt="{{ category.name }}"
+                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                loading="lazy"
+              >
+            {% else %}
+              <div class="w-full h-full bg-gradient-to-br from-primary-400 to-secondary-400"></div>
+            {% endif %}
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+          </div>
+
+          {# Category Info #}
+          <div class="relative h-full flex flex-col justify-end p-4 md:p-6">
+            <h3 class="text-white font-bold text-xl md:text-2xl mb-2">
+              {{ category.name }}
+            </h3>
+            <div class="flex items-center gap-2 text-white/80 text-sm">
+              <span>{{ category.products_count }}</span>
+              <span>{{ 'restaurant.dishes'|t }}</span>
+              <i class="sicon-chevron-left transform group-hover:translate-x-1 transition-transform"></i>
+            </div>
+          </div>
+
+          {# Hover Overlay #}
+          <div class="absolute inset-0 bg-primary-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        </a>
+      {% endfor %}
+    </div>
+
+    {# View All Categories Button #}
+    <div class="text-center mt-8">
+      <a
+        href="{{ salla.url.get('categories') }}"
+        class="inline-flex items-center gap-2 text-primary-600 hover:text-primary-700 font-semibold"
+      >
+        <span>{{ 'restaurant.view_all_categories'|t }}</span>
+        <i class="sicon-chevron-left"></i>
+      </a>
+    </div>
+  </div>
+</section>
+
+{# === FEATURED PRODUCTS === #}
+<section class="py-16 bg-white">
+  <div class="container mx-auto px-4">
+    <div class="flex items-end justify-between mb-12">
+      <div>
+        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+          {{ 'restaurant.featured_dishes'|t }}
+        </h2>
+        <p class="text-lg text-gray-600">
+          {{ 'restaurant.chef_recommendations'|t }}
+        </p>
+      </div>
+      <a
+        href="{{ salla.url.get('products') }}"
+        class="hidden md:inline-flex items-center gap-2 text-primary-600 hover:text-primary-700 font-semibold"
+      >
+        <span>{{ 'common.view_all'|t }}</span>
+        <i class="sicon-chevron-left"></i>
+      </a>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      {% for product in salla.product.get_featured() limit:8 %}
+        {% include 'components/restaurant/dish-card.twig' with {product: product} %}
+      {% endfor %}
+    </div>
+
+    {# Mobile View All #}
+    <div class="text-center mt-8 md:hidden">
+      <a
+        href="{{ salla.url.get('products') }}"
+        class="inline-flex items-center gap-2 bg-gray-100 hover:bg-gray-200 px-6 py-3 rounded-lg font-semibold"
+      >
+        <span>{{ 'common.view_all'|t }}</span>
+        <i class="sicon-chevron-left"></i>
+      </a>
+    </div>
+  </div>
+</section>
+
+{# === RESTAURANT FEATURES === #}
+<section class="py-16 bg-gradient-to-b from-gray-50 to-white">
+  <div class="container mx-auto px-4">
+    <div class="text-center mb-12">
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+        {{ 'restaurant.why_choose_us'|t }}
+      </h2>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+      {# Feature 1: Fast Delivery #}
+      <div class="text-center group">
+        <div class="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-primary-100 to-primary-200 rounded-2xl
+                    flex items-center justify-center
+                    group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+          <i class="sicon-rocket text-primary-600 text-4xl"></i>
+        </div>
+        <h3 class="font-bold text-xl mb-3 text-gray-900">
+          {{ 'restaurant.fast_delivery'|t }}
+        </h3>
+        <p class="text-gray-600 leading-relaxed">
+          {{ 'restaurant.fast_delivery_desc'|t }}
+        </p>
+      </div>
+
+      {# Feature 2: Fresh Ingredients #}
+      <div class="text-center group">
+        <div class="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-secondary-100 to-secondary-200 rounded-2xl
+                    flex items-center justify-center
+                    group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+          <i class="sicon-leaf text-secondary-600 text-4xl"></i>
+        </div>
+        <h3 class="font-bold text-xl mb-3 text-gray-900">
+          {{ 'restaurant.fresh_ingredients'|t }}
+        </h3>
+        <p class="text-gray-600 leading-relaxed">
+          {{ 'restaurant.fresh_ingredients_desc'|t }}
+        </p>
+      </div>
+
+      {# Feature 3: Made with Love #}
+      <div class="text-center group">
+        <div class="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-accent-100 to-accent-200 rounded-2xl
+                    flex items-center justify-center
+                    group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+          <i class="sicon-heart text-accent-600 text-4xl"></i>
+        </div>
+        <h3 class="font-bold text-xl mb-3 text-gray-900">
+          {{ 'restaurant.made_with_love'|t }}
+        </h3>
+        <p class="text-gray-600 leading-relaxed">
+          {{ 'restaurant.made_with_love_desc'|t }}
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# === TESTIMONIALS === #}
+{% set testimonials = salla.testimonial.getAll() %}
+{% if testimonials and testimonials|length > 0 %}
+  <section class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          {{ 'restaurant.customer_reviews'|t }}
+        </h2>
+        <p class="text-lg text-gray-600">
+          {{ 'restaurant.what_customers_say'|t }}
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        {% for testimonial in testimonials limit:3 %}
+          <div class="bg-gray-50 rounded-2xl p-6 md:p-8 relative">
+            {# Quote Icon #}
+            <div class="absolute top-6 right-6 text-primary-200 text-6xl opacity-50">
+              <i class="sicon-quote-right"></i>
+            </div>
+
+            {# Rating #}
+            <div class="flex gap-1 mb-4 relative z-10">
+              {% for i in 1..5 %}
+                <i class="sicon-star-fill text-yellow-400 text-lg"></i>
+              {% endfor %}
+            </div>
+
+            {# Review Text #}
+            <p class="text-gray-700 leading-relaxed mb-6 relative z-10">
+              {{ testimonial.comment }}
+            </p>
+
+            {# Customer Info #}
+            <div class="flex items-center gap-3 relative z-10">
+              <div class="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center">
+                <span class="text-primary-600 font-bold text-lg">
+                  {{ testimonial.name|slice(0, 1) }}
+                </span>
+              </div>
+              <div>
+                <div class="font-semibold text-gray-900">
+                  {{ testimonial.name }}
+                </div>
+                <div class="text-sm text-gray-500">
+                  {{ 'restaurant.verified_customer'|t }}
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+{% endif %}
+
+{# === CALL TO ACTION === #}
+<section class="py-16 bg-gradient-to-r from-primary-600 to-secondary-600">
+  <div class="container mx-auto px-4 text-center">
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
+      {{ 'restaurant.ready_to_order'|t }}
+    </h2>
+    <p class="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
+      {{ 'restaurant.order_cta_desc'|t }}
+    </p>
+    <a
+      href="{{ salla.url.get('products') }}"
+      class="inline-flex items-center gap-3 bg-white hover:bg-gray-100
+             text-primary-600 font-bold text-lg px-8 py-4 rounded-xl
+             shadow-xl hover:shadow-2xl transform hover:scale-105
+             transition-all duration-200"
+    >
+      <i class="sicon-shopping-bag text-2xl"></i>
+      <span>{{ 'restaurant.start_ordering'|t }}</span>
+    </a>
+  </div>
+</section>
+
 {% endblock %}
+
 {% block scripts %}
-    <script defer src="{{ 'home.js' | asset }}"></script>
+<script>
+// Homepage animations and interactions
+document.addEventListener('DOMContentLoaded', function() {
+  // Intersection Observer for scroll animations
+  const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('animate-visible');
+      }
+    });
+  }, observerOptions);
+
+  // Observe all category cards and feature cards
+  document.querySelectorAll('.category-card, .group').forEach(el => {
+    observer.observe(el);
+  });
+
+  // Smooth scroll for anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+});
+</script>
 {% endblock %}
