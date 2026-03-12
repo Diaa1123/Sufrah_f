@@ -10,8 +10,8 @@
     <br />
     <a href="https://salla.dev/"><strong>استكشف مدونة سلة »</strong></a>
     <br />
-    <a href="https://github.com/[your-repo]/sufrah/issues/new">الإبلاغ عن مشكلة</a> ·
-    <a href="https://github.com/[your-repo]/sufrah/discussions/new">طلب ميزة</a> ·
+    <a href="https://github.com/Diaa1123/Sufrah_f/issues/new">الإبلاغ عن مشكلة</a> ·
+    <a href="https://github.com/Diaa1123/Sufrah_f/discussions/new">طلب ميزة</a> ·
     <a href="https://docs.salla.dev/">التوثيق الرسمي</a>
   </p>
 </div>
@@ -104,8 +104,8 @@
 
 1. **استنساخ المشروع**
    ```bash
-   git clone https://github.com/[your-repo]/sufrah.git
-   cd sufrah
+   git clone https://github.com/Diaa1123/Sufrah_f.git
+   cd Sufrah_f
    ```
 
 2. **تثبيت التبعيات**
@@ -425,7 +425,7 @@ $restaurant-spacing: 1.5rem;
 
 <div align="center">
   <p>
-    صُنع بـ ❤️ بواسطة <a href="https://github.com/[your-username]">Diaa</a>
+    صُنع بـ ❤️ بواسطة <a href="https://github.com/Diaa1123">Diaa</a>
   </p>
   <p>
     مبني على <a href="https://github.com/SallaApp/theme-raed">Theme Raed</a> من <a href="https://salla.sa">Salla</a>
@@ -433,4 +433,4 @@ $restaurant-spacing: 1.5rem;
 </div>
 
 <p align="right">(<a href="#top">العودة للأعلى</a>)</p>
-"# Sufrah_f" 
+"# Sufrah_f"
