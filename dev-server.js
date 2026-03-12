@@ -13,7 +13,7 @@ const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 8000;
-const PUBLIC_DIR = path.join(__dirname, 'public');
+const PUBLIC_DIR = path.join(__dirname, 'assets');
 
 // Color console output
 const colors = {
@@ -32,9 +32,9 @@ console.log(`${colors.blue}
 ╚════════════════════════════════════════════════════════════╝
 ${colors.reset}`);
 
-// Check if public directory exists
+// Check if assets directory exists
 if (!fs.existsSync(PUBLIC_DIR)) {
-  console.error(`${colors.red}❌ Error: public/ directory not found!${colors.reset}`);
+  console.error(`${colors.red}❌ Error: assets/ directory not found!${colors.reset}`);
   console.log(`${colors.yellow}💡 Run 'pnpm run build' first to generate assets${colors.reset}\n`);
   process.exit(1);
 }
@@ -168,7 +168,7 @@ app.use((req, res) => {
       <div class="container">
         <h1>404</h1>
         <h2>الملف غير موجود</h2>
-        <p>الملف المطلوب غير موجود في مجلد public</p>
+        <p>الملف المطلوب غير موجود في مجلد assets</p>
         <code>${req.url}</code>
         <div class="tip">
           <strong>💡 نصيحة:</strong><br>
