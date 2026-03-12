@@ -1,0 +1,67 @@
+# Salla Theme - Files to ignore when uploading
+
+# Dependencies
+node_modules/
+vendor/
+
+# Development files
+webpack.config.js
+babel.config.js
+dev-server.js
+postcss.config.js
+tailwind.config.js
+jest.config.js
+
+# Package managers
+package.json
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# Source files (only built assets are needed)
+src/assets/js/
+src/assets/styles/
+src/assets/images/
+
+# Tests
+tests/
+__tests__/
+*.test.js
+*.spec.js
+
+# Documentation (except README)
+docs/
+CHANGELOG.md
+CONTRIBUTING.md
+LICENSE
+*.md
+!README.md
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build artifacts (webpack handles this)
+dist/
+
+# Temporary files
+*.log
+*.tmp
+.cache/
+
+# Environment
+.env
+.env.local
+.env.*.local

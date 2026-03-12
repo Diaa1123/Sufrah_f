@@ -19,7 +19,16 @@ module.exports = {
         'digital-files': asset('js/partials/digital-files.js'),
         checkout: [asset('js/cart.js'), asset('js/thankyou.js')],
         pages   : [asset('js/loyalty.js'), asset('js/brands.js'),],
-        product : [asset('js/product.js'), asset('js/products.js')],
+        product : [
+            asset('js/product.js'),
+            asset('js/products.js'),
+            asset('js/restaurant/modifiers.js')
+        ],
+        'restaurant-systems': [
+            asset('js/restaurant/business-hours.js'),
+            asset('js/restaurant/delivery-zones.js'),
+            asset('js/restaurant/scheduling.js')
+        ],
         order   : asset('js/order.js'),
         testimonials   : asset('js/testimonials.js')
     },
@@ -79,14 +88,6 @@ module.exports = {
                     priority: 10,
                     reuseExistingChunk: true,
                     enforce: true,
-                },
-                // Restaurant systems bundle (custom feature)
-                restaurant: {
-                    test: /[\\/]src[\\/]assets[\\/]js[\\/]restaurant[\\/]/,
-                    name: 'restaurant-systems',
-                    priority: 5,
-                    reuseExistingChunk: true,
-                    minSize: 0,
                 },
                 // Common/shared code
                 common: {
