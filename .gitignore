@@ -92,3 +92,14 @@ docs/.vitepress/cache/
 # Test outputs
 test-results/
 playwright-report/
+
+# IDE configs (personal - should not be in repo)
+.vscode/
+.claude/
+
+# Build logs
+*.log
+
+# Temporary files
+npm
+pnpm-lock.yaml.*
