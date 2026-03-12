@@ -74,7 +74,7 @@
     "css-loader": "^6.5.0",
     "css-minimizer-webpack-plugin": "^7.0.2",
     "eslint": "^8.57.0",
-    "glob": "^11.0.3",
+    "glob": "^13.0.6",
     "jest": "^30.3.0",
     "jest-environment-jsdom": "^30.3.0",
     "mini-css-extract-plugin": "^2.9.4",
@@ -92,5 +92,10 @@
     "terser-webpack-plugin": "^5.4.0",
     "webpack": "^5.103.0",
     "webpack-cli": "^5.0.1"
+  },
+  "pnpm": {
+    "overrides": {
+      "lodash": "^4.17.23"
+    }
   }
 }
