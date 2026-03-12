@@ -1,11 +1,81 @@
 module.exports = {
     important: false,
+
+    // ✅ CRITICAL: Optimized content paths for PurgeCSS
     content: [
         "src/views/**/*.twig",
         "src/assets/js/**/*.js",
-
-        //'node_modules/@salla.sa/twilight-tailwind-theme/safe-list-css.txt',
+        // ⚠️ Keep Salla safelist (contains Twilight theme primary colors)
+        // Future optimization: Extract only used classes to reduce from ~588KB to ~80-100KB
+        'node_modules/@salla.sa/twilight-tailwind-theme/safe-list-css.txt',
     ],
+
+    // ✅ Safelist ONLY dynamic/necessary classes
+    safelist: [
+        // Salla icons (dynamically added)
+        {
+            pattern: /^sicon-/,
+        },
+
+        // ✅ Primary colors (used in @apply and dynamic content)
+        'bg-primary-50', 'bg-primary-100', 'bg-primary-200', 'bg-primary-300',
+        'bg-primary-400', 'bg-primary-500', 'bg-primary-600', 'bg-primary-700',
+        'bg-primary-800', 'bg-primary-900',
+        'text-primary-50', 'text-primary-100', 'text-primary-200', 'text-primary-300',
+        'text-primary-400', 'text-primary-500', 'text-primary-600', 'text-primary-700',
+        'text-primary-800', 'text-primary-900',
+        'border-primary-50', 'border-primary-100', 'border-primary-200', 'border-primary-300',
+        'border-primary-400', 'border-primary-500', 'border-primary-600', 'border-primary-700',
+        'border-primary-800', 'border-primary-900',
+        'ring-primary-500', 'ring-primary-600',
+
+        // ✅ Secondary colors
+        'bg-secondary-50', 'bg-secondary-600', 'bg-secondary-700',
+        'text-secondary-600', 'text-secondary-700',
+        'border-secondary-500', 'border-secondary-600',
+
+        // ✅ Accent colors
+        'bg-accent-500', 'bg-accent-600',
+        'text-accent-500', 'text-accent-600',
+        'border-accent-500',
+
+        // Status badges
+        'bg-green-500', 'bg-green-600',
+        'bg-red-500', 'bg-red-600',
+        'bg-yellow-500', 'bg-yellow-600',
+        'bg-blue-500', 'bg-blue-600',
+        'text-green-600', 'text-green-700',
+        'text-red-600', 'text-red-700',
+        'text-yellow-600', 'text-yellow-700',
+        'text-blue-600', 'text-blue-700',
+
+        // Animation classes
+        'animate-spin',
+        'animate-pulse',
+        'animate-bounce',
+        'animate-fade-in',
+        'animate-slide-up',
+        'animate-scale-in',
+        'animate-float',
+
+        // Restaurant-specific dynamic classes
+        'bg-restaurant-500', 'bg-restaurant-600',
+        'text-restaurant-500', 'text-restaurant-600',
+        'border-restaurant-500', 'border-restaurant-600',
+        'hover:bg-restaurant-600', 'hover:bg-restaurant-700',
+
+        // Notification classes (Salla notifications)
+        'notification-success',
+        'notification-error',
+        'notification-warning',
+        'notification-info',
+
+        // Common hover states
+        'hover:bg-primary-700',
+        'hover:text-primary-600',
+        'hover:border-primary-600',
+    ],
+
     darkMode: 'class', // or 'media' or 'class'
     theme   : {
         container : {

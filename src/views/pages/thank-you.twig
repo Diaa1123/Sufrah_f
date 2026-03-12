@@ -13,110 +13,322 @@
 
 {% block content %}
     {% hook 'thank-you:start' %}
-    <div class="h-52 -mb-52 w-full bg-primary rtl:right-0 ltr:left-0 relative -z-1">
-        <svg class="text-primary absolute top-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
-            <path class="fill-current" fill-opacity="1"
-                  d="M0,96L120,112C240,128,480,160,720,165.3C960,171,1200,149,1320,138.7L1440,128L1440,0L1320,0C1200,0,960,0,720,0C480,0,240,0,120,0L0,0Z"></path>
-        </svg>
-    </div>
-    <div class="container mb-20">
-        <nav class="w-full py-5">
-            <ol class="list-reset flex items-center text-sm text-primary-reverse">
-                <li><a href="{{ link('/') }}" class="fix-align text-primary-reverse">{{ trans('common.titles.home') }}</a></li>
-                <li><i class="sicon-keyboard_arrow_left mx-2"></i></li>
-                <li><span class="fix-align">{{ thank_you_title }}</span></li>
-            </ol>
-        </nav>
-        <div class="bg-white p-4 md:p-8 rounded-md mb-6 md:mb-8">
-            <div class="flex flex-col items-center pt-16 pb-10">
-                <div class="rtl:-scale-x-100">
-                  <img src="{{ 'images/delivery-bro.svg' | asset }}" alt="{{ thank_you_title }}"
-                     class="thanks-item opacity-0 w-40 mb-8">
+
+    <div class="thank-you-page bg-gradient-to-b from-gray-50 to-white min-h-screen py-8 md:py-12">
+        <div class="container mx-auto px-4">
+            <div class="max-w-4xl mx-auto">
+
+                {# Success Animation & Message #}
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-12 text-center mb-6 md:mb-8 animate-slide-up">
+                    {# Animated Success Icon #}
+                    <div class="w-20 h-20 md:w-28 md:h-28 mx-auto mb-6 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center shadow-xl animate-scale-in animation-delay-200">
+                        <i class="sicon-check text-white text-5xl md:text-7xl"></i>
+                    </div>
+
+                    {# Thank You Title #}
+                    <h1 class="text-2xl md:text-4xl font-bold text-gray-900 mb-3 animate-slide-up animation-delay-400">
+                        {{ thank_you_title }}
+                    </h1>
+
+                    {# Subtitle #}
+                    <p class="text-base md:text-lg text-gray-600 mb-8 max-w-2xl mx-auto animate-slide-up animation-delay-600">
+                        {{ trans('pages.thank_you.message') }}
+                    </p>
+
+                    {# Order Reference Number - Copy to Clipboard #}
+                    <div class="inline-flex items-center gap-3 md:gap-4 bg-gradient-to-r from-primary-50 to-accent-50 rounded-xl px-6 py-4 shadow-sm animate-slide-up animation-delay-800">
+                        <div class="text-{{ theme.is_rtl ? 'right' : 'left' }}">
+                            <div class="text-xs md:text-sm text-gray-600 mb-1">{{ trans('pages.thank_you.order_id') }}</div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xl md:text-3xl font-bold text-primary-600">#{{ order.reference_id }}</span>
+                                <salla-button
+                                    class="!p-2"
+                                    onclick="app.copyToClipboard(event)"
+                                    color="light"
+                                    shape="icon"
+                                    data-content="{{ order.reference_id }}"
+                                    aria-label="{{ trans('common.copy') }}">
+                                    <i class="copy-icon sicon-swap-stroke text-lg"></i>
+                                </salla-button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {# Restaurant Delivery Image #}
+                    <div class="mt-8 {{ theme.is_rtl ? '-scale-x-100' : '' }}">
+                        <img src="{{ 'images/delivery-bro.svg' | asset }}"
+                             alt="{{ trans('restaurant.delivery') }}"
+                             class="w-48 md:w-64 mx-auto opacity-90">
+                    </div>
                 </div>
-                <h1 class="font-bold text-lg mb-2.5 thanks-item opacity-0">{{ thank_you_title }}</h1>
-                <p class="thanks-item opacity-0 text-gray-500 max-w-xs text-center text-sm leading-6 mb-6">
-                    {{ trans('pages.thank_you.order_id') }}
-                    <salla-button class="relative" onclick="app.copyToClipboard(event)" color="dark" shape="link" data-content="{{ order.reference_id }}">
-                        <span>#{{ order.reference_id }}</span>
-                        <i class="copy-icon sicon-swap-stroke pointer-events-none rtl:mr-1 ltr:ml-1"></i>
+
+                {# Order Instructions (if any) #}
+                {% if order.instructions %}
+                    <div class="bg-amber-50 border border-amber-200 rounded-xl p-6 mb-6 md:mb-8 animate-slide-up animation-delay-1000">
+                        <div class="flex items-start gap-3">
+                            <div class="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <i class="sicon-info text-amber-600 text-xl"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="font-semibold text-amber-900 mb-2">{{ trans('common.important_note') }}</h3>
+                                <div class="text-sm text-amber-800 leading-relaxed">
+                                    {{ order.instructions|raw }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                {# Order Details Card #}
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-6 md:mb-8 animate-slide-up animation-delay-1200">
+                    <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-200">
+                        <h2 class="text-xl md:text-2xl font-bold text-gray-900 flex items-center gap-2">
+                            <i class="sicon-receipt text-primary-600"></i>
+                            {{ trans('pages.thank_you.order_details') }}
+                        </h2>
+                        <salla-button
+                            onclick="salla.order.show({order_id:'{{ order.id }}', url:'{{ order.url }}'})"
+                            color="primary"
+                            size="small"
+                            fill="outline">
+                            <i class="sicon-newspaper {{ theme.is_rtl ? 'ml-1' : 'mr-1' }}"></i>
+                            {{ trans('pages.orders.view_details') }}
+                        </salla-button>
+                    </div>
+
+                    <div class="space-y-6">
+                        {# Delivery Information #}
+                        <div class="flex items-start gap-4 pb-6 border-b border-gray-200">
+                            <div class="w-12 h-12 md:w-14 md:h-14 bg-primary-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                                <i class="sicon-truck-fast text-primary-600 text-2xl md:text-3xl"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="font-semibold text-gray-900 mb-2 text-base md:text-lg">
+                                    {{ trans('pages.orders.delivery_details') }}
+                                </h3>
+                                <div class="text-gray-600 space-y-2 text-sm md:text-base">
+                                    {% if order.shipping.address %}
+                                        <div class="flex items-start gap-2">
+                                            <i class="sicon-location text-gray-400 mt-1"></i>
+                                            <span>{{ order.shipping.address }}</span>
+                                        </div>
+                                    {% endif %}
+                                    {% if order.estimated_delivery_time %}
+                                        <div class="flex items-center gap-2 text-accent-600 font-medium">
+                                            <i class="sicon-clock"></i>
+                                            <span>{{ trans('restaurant.estimated_delivery') }}: {{ order.estimated_delivery_time }}</span>
+                                        </div>
+                                    {% endif %}
+                                    {% if order.delivery_zone %}
+                                        <div class="flex items-center gap-2">
+                                            <i class="sicon-map text-gray-400"></i>
+                                            <span>{{ trans('restaurant.delivery_zone') }}: {{ order.delivery_zone }}</span>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        {% hook 'thank-you:items.start' %}
+
+                        {# Order Items List #}
+                        <div>
+                            <h3 class="font-semibold text-gray-900 mb-4 text-base md:text-lg flex items-center gap-2">
+                                <i class="sicon-shopping-bag text-gray-400"></i>
+                                {{ trans('pages.orders.order_items') }}
+                            </h3>
+                            <div class="space-y-3">
+                                {% for item in order.items %}
+                                    <div class="flex items-center justify-between gap-4 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                                        <div class="flex items-center gap-3 flex-1">
+                                            {# Item Image (if available) #}
+                                            {% if item.product.image %}
+                                                <div class="w-12 h-12 md:w-14 md:h-14 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100">
+                                                    <img src="{{ item.product.image.url }}"
+                                                         alt="{{ item.product.name }}"
+                                                         class="w-full h-full object-cover"
+                                                         loading="lazy">
+                                                </div>
+                                            {% endif %}
+
+                                            <div class="flex-1 min-w-0">
+                                                <div class="flex items-center gap-2 mb-1">
+                                                    <span class="inline-flex items-center justify-center w-6 h-6 bg-gray-200 text-gray-700 text-xs font-bold rounded-full flex-shrink-0">
+                                                        {{ item.quantity }}
+                                                    </span>
+                                                    <span class="font-medium text-gray-900 text-sm md:text-base truncate">
+                                                        {{ item.product.name }}
+                                                    </span>
+                                                </div>
+
+                                                {# Item Options #}
+                                                {% if item.options %}
+                                                    <div class="text-xs text-gray-500 space-y-0.5">
+                                                        {% for option in item.options %}
+                                                            <div>{{ option.name }}: {{ option.value }}</div>
+                                                        {% endfor %}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+
+                                        <span class="font-semibold text-gray-900 text-sm md:text-base whitespace-nowrap">
+                                            {{ item.total }} {{ trans('common.currency') }}
+                                        </span>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        {% hook 'thank-you:items.end' %}
+
+                        {# Order Summary #}
+                        <div class="pt-6 border-t-2 border-gray-200">
+                            <div class="space-y-3 text-sm md:text-base">
+                                <div class="flex justify-between text-gray-700">
+                                    <span>{{ trans('pages.orders.subtotal') }}</span>
+                                    <span class="font-medium">{{ order.amounts.sub_total.formatted }} {{ trans('common.currency') }}</span>
+                                </div>
+
+                                {% if order.amounts.shipping_cost.amount > 0 %}
+                                    <div class="flex justify-between text-gray-700">
+                                        <span>{{ trans('pages.orders.delivery_fee') }}</span>
+                                        <span class="font-medium">{{ order.amounts.shipping_cost.formatted }} {{ trans('common.currency') }}</span>
+                                    </div>
+                                {% else %}
+                                    <div class="flex justify-between text-green-600">
+                                        <span>{{ trans('pages.orders.delivery_fee') }}</span>
+                                        <span class="font-medium">{{ trans('common.free') }}</span>
+                                    </div>
+                                {% endif %}
+
+                                {% if order.amounts.tax.amount > 0 %}
+                                    <div class="flex justify-between text-gray-700">
+                                        <span>{{ trans('pages.orders.tax') }}</span>
+                                        <span class="font-medium">{{ order.amounts.tax.formatted }} {{ trans('common.currency') }}</span>
+                                    </div>
+                                {% endif %}
+
+                                {% if order.amounts.discount.amount > 0 %}
+                                    <div class="flex justify-between text-green-600">
+                                        <span>{{ trans('pages.orders.discount') }}</span>
+                                        <span class="font-medium">- {{ order.amounts.discount.formatted }} {{ trans('common.currency') }}</span>
+                                    </div>
+                                {% endif %}
+
+                                <div class="flex justify-between items-center text-xl md:text-2xl font-bold pt-4 border-t border-gray-200">
+                                    <span class="text-gray-900">{{ trans('pages.orders.total') }}</span>
+                                    <span class="text-primary-600">{{ order.amounts.total.formatted }} {{ trans('common.currency') }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {# Contact & Email Cards #}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
+                    {# Email Invoice Card #}
+                    {% if order.email_sent %}
+                        <div class="bg-white rounded-xl shadow-md p-6 flex flex-col items-center justify-center text-center hover:shadow-lg transition-shadow animate-slide-up animation-delay-1400">
+                            <div class="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
+                                <i class="sicon-mail-open text-blue-600 text-2xl"></i>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-2">{{ trans('pages.thank_you.email_sent') }}</p>
+                            <b class="text-sm text-gray-900">{{ order.customer.email }}</b>
+                        </div>
+                    {% else %}
+                        <div class="bg-white rounded-xl shadow-md p-6 flex flex-col items-center justify-center animate-slide-up animation-delay-1400">
+                            <div class="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
+                                <i class="sicon-newspaper-alt text-blue-600 text-2xl"></i>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-4 text-center">{{ trans('pages.thank_you.resend_email') }}</p>
+                            <form onsubmit="return salla.form.onSubmit('order.sendInvoice', event)" class="w-full">
+                                <div class="flex w-full">
+                                    <input
+                                        type="email"
+                                        class="form-input {{ theme.is_rtl ? 'rounded-l-none border-l-0' : 'rounded-r-none border-r-0' }} flex-1 text-sm"
+                                        placeholder="your@email.com"
+                                        required
+                                        name="email"
+                                        value="{{ order.customer.email }}">
+                                    <salla-button
+                                        type="submit"
+                                        loader-position="center"
+                                        class="{{ theme.is_rtl ? 'rounded-r-none' : 'rounded-l-none' }}">
+                                        <span class="btn__text text-sm">{{ trans('blocks.comments.submit') }}</span>
+                                    </salla-button>
+                                </div>
+                            </form>
+                        </div>
+                    {% endif %}
+
+                    {# Support Contact Card #}
+                    <div class="bg-white rounded-xl shadow-md p-6 flex flex-col items-center justify-center text-center hover:shadow-lg transition-shadow animate-slide-up animation-delay-1600">
+                        <div class="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center mb-4">
+                            <i class="sicon-headset text-green-600 text-2xl"></i>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-4">{{ trans('common.titles.support') }}</p>
+
+                        <div class="flex flex-col gap-3 w-full">
+                            {% if store.contacts.mobile %}
+                                <a href="tel:{{ store.contacts.mobile }}"
+                                   class="flex items-center justify-center gap-2 text-sm hover:text-primary-600 transition-colors">
+                                    <i class="sicon-phone text-lg"></i>
+                                    <b class="unicode">{{ store.contacts.mobile }}</b>
+                                </a>
+                            {% endif %}
+
+                            {% if store.contacts.whatsapp %}
+                                <a href="https://wa.me/{{ store.contacts.whatsapp|replace({' ': '', '+': '', '-': ''}) }}"
+                                   class="flex items-center justify-center gap-2 text-sm text-green-600 hover:text-green-700 transition-colors"
+                                   target="_blank"
+                                   rel="noopener">
+                                    <i class="sicon-whatsapp text-lg"></i>
+                                    <b class="unicode">{{ store.contacts.whatsapp }}</b>
+                                </a>
+                            {% endif %}
+
+                            {% if store.contacts.email %}
+                                <a href="mailto:{{ store.contacts.email }}"
+                                   class="flex items-center justify-center gap-2 text-sm hover:text-primary-600 transition-colors">
+                                    <i class="sicon-envelope text-lg"></i>
+                                    <b>{{ store.contacts.email }}</b>
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                {# Action Buttons #}
+                <div class="flex flex-col sm:flex-row gap-4 animate-slide-up animation-delay-1800">
+                    <salla-button
+                        onclick="salla.order.show({order_id:'{{ order.id }}', url:'{{ order.url }}'})"
+                        class="flex-1"
+                        color="primary"
+                        size="large">
+                        <i class="sicon-receipt-text {{ theme.is_rtl ? 'ml-2' : 'mr-2' }}"></i>
+                        <span>{{ trans('pages.orders.track_order') }}</span>
                     </salla-button>
-                </p>
-                <salla-button onclick="salla.order.show({order_id:'{{ order.id }}', url:'{{ order.url }}'})">
-                  <i class="sicon-newspaper rtl:ml-1 ltr:mr-1"></i>
-                  {{ trans('pages.thank_you.order_details') }}
-                </salla-button>
-            </div>
 
-            {% if order.instructions %}
-                <article class="article article--main article--small text-center">
-                    {{ order.instructions|raw }}
-                </article>
-            {% endif %}
-
-            {% for message in messages %}
-                <div class="flex flex-col items-center pt-1 pb-10 justify-start rtl:space-x-reverse space-x-2">
-                    <span class="font-bold">{{ message }}</span>
+                    <a href="{{ link('/') }}"
+                       class="flex-1 inline-flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-900 font-semibold py-4 px-6 rounded-xl transition-all hover:shadow-md">
+                        <i class="sicon-home text-lg"></i>
+                        <span>{{ trans('common.back_to_home') }}</span>
+                    </a>
                 </div>
-            {% endfor %}
 
-            {% hook 'thank-you:items.start' %}
-
-            {% hook 'thank-you:items.end' %}
-        </div>
-
-        <div class="lg:flex rtl:space-x-reverse lg:space-x-8">
-            {% if order.email_sent %}
-                <div class="duration-500 hover:shadow-default flex-1 bg-white p-8 rounded-md mb-6 md:mb-10 flex flex-col items-center justify-center">
-                    <div class="bg-gray-100 rounded-icon w-12 h-12 mb-2.5">
-                        <i class="sicon-newspaper-alt text-xl"></i>
+                {# Additional Messages #}
+                {% for message in messages %}
+                    <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mt-4 text-center">
+                        <span class="font-semibold text-blue-900">{{ message }}</span>
                     </div>
-                    <p class="text-sm mb-2.5">{{ trans('pages.thank_you.email_sent') }}</p>
-                    <b class="text-sm">{{ order.customer.email }}</b>
-                </div>
-            {% else %}
-                <div id="invoice-form" class="thankyou-block">
-                    <div class="bg-gray-100 rounded-icon w-12 h-12 mb-2.5">
-                        <i class="sicon-newspaper-alt text-xl"></i>
-                    </div>
-                    <p class="text-sm mb-2.5">{{ trans('pages.thank_you.resend_email') }}</p>
-                    <form onsubmit="return salla.form.onSubmit('order.sendInvoice', event)">
-                        <div class="flex max-w-3xl w-full">
-                            <input type="email" class="form-input rtl:rounded-l-none ltr:rounded-r-none rtl:border-l-0 ltr:border-r-0 !w-[160px] sm:!w-[220px]" placeholder="your@email.com" required name="email">
-                            <salla-button type="submit" loader-position="center" class="rtl:rounded-r-none ltr:rounded-l-none lg:w-24 h-10">
-                              <span class="btn__text">{{ trans('blocks.comments.submit') }}</span>
-                            </salla-button>
-                        </div>
-                    </form>
-                </div>
-            {% endif %}
+                {% endfor %}
 
-            <div class="thankyou-block">
-                <div class="bg-gray-100 rounded-icon w-12 h-12 mb-2.5">
-                    <i class="sicon-mail-letter text-xl"></i>
-                </div>
-                <p class="text-sm mb-2.5">{{ trans('common.titles.support') }}</p>
-
-                <div class="flex rtl:space-x-reverse space-x-6">
-                    {% if store.contacts.mobile %}
-                        <div class="text-sm unicode flex items-center">
-                            <i class="sicon-phone"></i>
-                            <a href="tel:{{ store.contacts.mobile }}" class="hover:text-primary transition"><b
-                                       class="unicode mx-1.5">{{ store.contacts.mobile }}</b></a>
-                        </div>
-                    {% endif %}
-
-                    {% if store.contacts.whatsapp %}
-                        <div class="text-sm unicode flex items-center">
-                            <i class="sicon-whatsapp"></i>
-                            <a href="https://wa.me/{{ store.contacts.whatsapp|replace({' ': '', '+': '', '-': ''}) }}" class="hover:text-primary transition" target="_blank" rel="noopener"><b
-                                        class="unicode mx-1.5">{{ store.contacts.whatsapp }}</b></a>
-                        </div>
-                    {% endif %}
-                </div>
             </div>
         </div>
-        {% hook 'thank-you:end' %}
     </div>
+
+    {% hook 'thank-you:end' %}
 {% endblock %}
 
 {% block scripts %}

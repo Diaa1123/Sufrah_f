@@ -6,78 +6,317 @@
 | cart.total       | string  | Formatted total ex: "١٠٠ ر.س"   |
 #}
 {% set important_links = theme.settings.get('important_links') %}
-<header class="store-header">
-  {# Top Nav #}
-  <div class="top-navbar">
-    <div class="container flex justify-between">
-      <div class="flex-1 flex items-center gap-2">
-          {# Footer Menu #}
-          {% if important_links %}
-            <salla-menu source="footer" topnav></salla-menu>
-          {% endif %}
 
-          {# Language & Currency Component #}
-          <div class="header-buttons">
-              {% if store.settings.is_multilingual or store.settings.currencies_enabled %}
-                  <button type="button" onclick="salla.event.dispatch('localization::open')" class="btn--rounded-gray basis-0">
-                      <span>{{ user.language.name }}</span>
-                      <span class="mx-1.5">|</span> <span>{{ currency.symbol }}</span>
-                  </button>
-                  <salla-localization-modal></salla-localization-modal>
-              {% endif %}
+<header class="store-header restaurant-header">
+  {# Top Announcement Bar (Restaurant Specific) #}
+  {% if theme.settings.get('restaurant.announcement_enabled') %}
+    <div class="announcement-bar bg-primary-600 text-white py-2">
+      <div class="container mx-auto px-4">
+        <div class="flex items-center justify-center gap-2 text-sm">
+          <i class="sicon-megaphone"></i>
+          <span>{{ theme.settings.get('restaurant.announcement_text') ?? trans('restaurant.default_announcement') }}</span>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  {# Top Nav - Enhanced for Restaurant #}
+  <div class="top-navbar bg-gray-50 border-b border-gray-200">
+    <div class="container mx-auto px-4">
+      <div class="flex items-center justify-between py-2">
+        {# Left Section: Business Hours + Links #}
+        <div class="flex items-center gap-4 flex-1">
+          {# Business Hours Widget (Desktop Only) #}
+          <div class="hidden lg:flex items-center">
+            {% include 'components/restaurant/business-hours-widget.twig' with {
+              show_today_only: true,
+              compact: true
+            } %}
           </div>
 
-          {# Scopes | Branches #}
-          {% if store.scope %}
-              <button class="btn--rounded-gray"
-                      onclick="salla.event.dispatch('scopes::open', {'mode': 'default'})">
-                  <i class="sicon-location rtl:ml-1 ltr:mr-1"></i> {{ store.scope.name }}
-              </button>
+          {# Important Links #}
+          {% if important_links %}
+            <div class="hidden md:flex items-center">
+              <salla-menu source="footer" topnav class="text-xs"></salla-menu>
+            </div>
+          {% endif %}
+        </div>
+
+        {# Right Section: Language, Currency, Branches, Search #}
+        <div class="flex items-center gap-2 flex-1 justify-end">
+          {# Language & Currency #}
+          {% if store.settings.is_multilingual or store.settings.currencies_enabled %}
+            <button type="button"
+                    onclick="salla.event.dispatch('localization::open')"
+                    class="btn--rounded-gray text-xs h-8"
+                    aria-label="{{ trans('common.language_currency') }}">
+              <span>{{ user.language.name }}</span>
+              <span class="mx-1.5">|</span>
+              <span>{{ currency.symbol }}</span>
+            </button>
+            <salla-localization-modal></salla-localization-modal>
           {% endif %}
 
-          {# Search bar #}
-          <div class="header-search flex-1">
+          {# Scopes/Branches #}
+          {% if store.scope %}
+            <button class="btn--rounded-gray text-xs h-8"
+                    onclick="salla.event.dispatch('scopes::open', {'mode': 'default'})"
+                    aria-label="{{ trans('common.select_branch') }}">
+              <i class="sicon-location {{ theme.is_rtl ? 'ml-1' : 'mr-1' }}"></i>
+              {{ store.scope.name }}
+            </button>
+          {% endif %}
+
+          {# Search Bar (Desktop) #}
+          <div class="hidden md:flex header-search flex-1 max-w-xs">
             <salla-search inline oval height="36"></salla-search>
           </div>
-      </div>
 
-      <salla-contacts is-header></salla-contacts>
+          {# Contact Info (Desktop) #}
+          <div class="hidden lg:flex">
+            <salla-contacts is-header></salla-contacts>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
-  {# Main Nav #}
-  <div id="mainnav" class="main-nav-container shadow-default bg-white flex items-center">
-      <div class="inner bg-inherit w-full">
-          <div class="container">
-              <div class="flex items-stretch justify-between relative">
-                  <div class="flex items-center">
-                      <a class="lg:hidden mburger mburger--collapse leading-none rtl:ml-4 ltr:mr-4" href="#mobile-menu" aria-label="Open-menu">
-                        <i class="sicon-menu text-primary text-2xl"></i>
-                      </a>
-                      <a class="navbar-brand" href="{{ store.url }}">
-                          <img fetchpriority="high" width="100%" height="100%" loading="eager" src="{{ store.logo|cdn(175) }}" alt="{{ store.name }} logo">
-                          {% if is_page('index') %}
-                            <h1 class="sr-only">{{ store.name }}</h1>
-                          {% else %}
-                            <h2 class="sr-only">{{ store.name }}</h2>
-                          {% endif %}
-                      </a>
-                      <custom-main-menu></custom-main-menu>
-                  </div>
-                  <div class="flex items-center justify-end my-2.5">
-                      {% if user.type=='user' %}
-                        <salla-user-menu avatar-only show-header></salla-user-menu>
-                      {% else %}
-                          <button class="header-btn" aria-label="user-icon" onclick="salla.event.dispatch('login::open')">
-                            <i class="header-btn__icon sicon-user-circle"></i>
-                          </button>
+  {# Main Nav - Enhanced Navigation #}
+  <div id="mainnav" class="main-nav-container shadow-sm bg-white sticky top-0 z-50">
+    <div class="inner bg-inherit w-full">
+      <div class="container mx-auto px-4">
+        <div class="flex items-center justify-between py-4">
+
+          {# Left: Mobile Menu + Logo + Desktop Menu #}
+          <div class="flex items-center gap-6">
+            {# Mobile Menu Button #}
+            <a class="lg:hidden mburger mburger--collapse"
+               href="#mobile-menu"
+               aria-label="{{ trans('common.open_menu') }}">
+              <i class="sicon-menu text-primary text-2xl"></i>
+            </a>
+
+            {# Logo #}
+            <a class="navbar-brand flex items-center" href="{{ store.url }}">
+              <img fetchpriority="high"
+                   width="100%"
+                   height="100%"
+                   loading="eager"
+                   src="{{ store.logo|cdn(175) }}"
+                   alt="{{ store.name }}"
+                   class="max-h-12 md:max-h-14 w-auto">
+              {% if is_page('index') %}
+                <h1 class="sr-only">{{ store.name }}</h1>
+              {% else %}
+                <h2 class="sr-only">{{ store.name }}</h2>
+              {% endif %}
+            </a>
+
+            {# Desktop Main Menu #}
+            <nav class="hidden lg:flex items-center gap-6">
+              <a href="{{ link('/') }}"
+                 class="nav-link font-semibold text-gray-700 hover:text-primary-600 transition-colors {{ is_page('index') ? 'active text-primary-600' : '' }}">
+                <i class="sicon-home {{ theme.is_rtl ? 'ml-1' : 'mr-1' }}"></i>
+                {{ trans('common.home') }}
+              </a>
+
+              <a href="{{ link('products') }}"
+                 class="nav-link font-semibold text-gray-700 hover:text-primary-600 transition-colors {{ is_page('products') ? 'active text-primary-600' : '' }}">
+                <i class="sicon-dining {{ theme.is_rtl ? 'ml-1' : 'mr-1' }}"></i>
+                {{ trans('restaurant.menu') }}
+              </a>
+
+              {# Categories Mega Menu #}
+              {% set categories = salla.category.getAll() %}
+              {% if categories|length > 0 %}
+                <div class="relative group">
+                  <button class="nav-link font-semibold text-gray-700 hover:text-primary-600 transition-colors flex items-center gap-1">
+                    <i class="sicon-list {{ theme.is_rtl ? 'ml-1' : 'mr-1' }}"></i>
+                    {{ trans('common.categories') }}
+                    <i class="sicon-keyboard_arrow_down text-sm"></i>
+                  </button>
+
+                  {# Categories Dropdown #}
+                  <div class="absolute {{ theme.is_rtl ? 'right-0' : 'left-0' }} top-full mt-2 bg-white rounded-xl shadow-xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 min-w-[240px] z-50">
+                    <div class="py-2">
+                      {% for category in categories limit:8 %}
+                        <a href="{{ category.url }}"
+                           class="block px-4 py-3 hover:bg-primary-50 hover:text-primary-600 transition-colors">
+                          <div class="flex items-center justify-between">
+                            <span class="font-medium">{{ category.name }}</span>
+                            <span class="text-xs text-gray-400">({{ category.products_count }})</span>
+                          </div>
+                        </a>
+                      {% endfor %}
+
+                      {% if categories|length > 8 %}
+                        <div class="border-t border-gray-100 mt-2 pt-2">
+                          <a href="{{ link('products') }}"
+                             class="block px-4 py-2 text-primary-600 font-semibold text-sm hover:bg-primary-50 transition-colors">
+                            {{ trans('common.view_all') }} →
+                          </a>
+                        </div>
                       {% endif %}
-                      <salla-cart-summary class="ml-4 rtl:ml-[unset] rtl:mr-4">
-                        <i slot="icon" class="header-btn__icon icon sicon-shopping-bag"></i>
-                      </salla-cart-summary>
+                    </div>
                   </div>
-              </div>
+                </div>
+              {% endif %}
+
+              {# Custom Pages Menu #}
+              <custom-main-menu></custom-main-menu>
+            </nav>
           </div>
+
+          {# Right: User Menu + Cart #}
+          <div class="flex items-center gap-3">
+            {# Mobile Search Button #}
+            <button class="md:hidden header-btn"
+                    onclick="toggleMobileSearch()"
+                    aria-label="{{ trans('common.search') }}">
+              <i class="header-btn__icon sicon-search"></i>
+            </button>
+
+            {# User Menu #}
+            {% if user.type == 'user' %}
+              <salla-user-menu avatar-only show-header></salla-user-menu>
+            {% else %}
+              <button class="header-btn"
+                      aria-label="{{ trans('common.login') }}"
+                      onclick="salla.event.dispatch('login::open')">
+                <i class="header-btn__icon sicon-user-circle"></i>
+              </button>
+            {% endif %}
+
+            {# Cart Summary with Badge #}
+            <salla-cart-summary class="{{ theme.is_rtl ? 'mr-0' : 'ml-0' }}">
+              <i slot="icon" class="header-btn__icon icon sicon-shopping-bag relative">
+                {% if cart.items_count > 0 %}
+                  <span class="cart-badge absolute -top-2 {{ theme.is_rtl ? '-left-2' : '-right-2' }} bg-accent-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center animate-scale-in">
+                    {{ cart.items_count }}
+                  </span>
+                {% endif %}
+              </i>
+            </salla-cart-summary>
+          </div>
+        </div>
+
+        {# Mobile Search Bar (Expandable) #}
+        <div id="mobileSearchBar" class="md:hidden pb-4 hidden">
+          <salla-search inline oval height="40"></salla-search>
+        </div>
       </div>
+    </div>
   </div>
 </header>
+
+{# Mobile Menu Overlay #}
+<div id="mobile-menu" class="mobile-menu-overlay">
+  <div class="mobile-menu-inner">
+    <div class="mobile-menu-header flex items-center justify-between p-4 border-b border-gray-200">
+      <div class="flex items-center gap-3">
+        <img src="{{ store.logo|cdn(100) }}" alt="{{ store.name }}" class="h-10 w-auto">
+        <span class="font-bold text-lg">{{ store.name }}</span>
+      </div>
+      <button class="mobile-menu-close" aria-label="{{ trans('common.close') }}">
+        <i class="sicon-close text-2xl"></i>
+      </button>
+    </div>
+
+    <div class="mobile-menu-content p-4">
+      {# Business Hours (Mobile) #}
+      <div class="mb-6 bg-primary-50 rounded-xl p-4">
+        {% include 'components/restaurant/business-hours-widget.twig' with {
+          show_today_only: false,
+          compact: false
+        } %}
+      </div>
+
+      {# Main Navigation #}
+      <nav class="space-y-2 mb-6">
+        <a href="{{ link('/') }}"
+           class="mobile-nav-link flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors {{ is_page('index') ? 'bg-primary-50 text-primary-600' : '' }}">
+          <i class="sicon-home text-xl"></i>
+          <span class="font-semibold">{{ trans('common.home') }}</span>
+        </a>
+
+        <a href="{{ link('products') }}"
+           class="mobile-nav-link flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors {{ is_page('products') ? 'bg-primary-50 text-primary-600' : '' }}">
+          <i class="sicon-dining text-xl"></i>
+          <span class="font-semibold">{{ trans('restaurant.menu') }}</span>
+        </a>
+
+        {# Categories in Mobile Menu #}
+        {% set categories = salla.category.getAll() %}
+        {% if categories|length > 0 %}
+          <details class="mobile-nav-dropdown">
+            <summary class="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 cursor-pointer">
+              <div class="flex items-center gap-3">
+                <i class="sicon-list text-xl"></i>
+                <span class="font-semibold">{{ trans('common.categories') }}</span>
+              </div>
+              <i class="sicon-keyboard_arrow_down transition-transform"></i>
+            </summary>
+            <div class="mt-2 {{ theme.is_rtl ? 'mr-8' : 'ml-8' }} space-y-1">
+              {% for category in categories %}
+                <a href="{{ category.url }}"
+                   class="block p-2 rounded-lg hover:bg-gray-50 text-sm">
+                  {{ category.name }} <span class="text-gray-400">({{ category.products_count }})</span>
+                </a>
+              {% endfor %}
+            </div>
+          </details>
+        {% endif %}
+      </nav>
+
+      {# Footer Menu in Mobile #}
+      {% if important_links %}
+        <div class="border-t border-gray-200 pt-4 mb-6">
+          <salla-menu source="footer" class="mobile-footer-menu"></salla-menu>
+        </div>
+      {% endif %}
+
+      {# Contact & Social #}
+      <div class="border-t border-gray-200 pt-4">
+        <salla-contacts></salla-contacts>
+        <div class="mt-4">
+          <salla-social></salla-social>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{# JavaScript for Mobile Interactions #}
+<script>
+// Toggle mobile search
+function toggleMobileSearch() {
+  const searchBar = document.getElementById('mobileSearchBar');
+  searchBar.classList.toggle('hidden');
+}
+
+// Cart badge animation on update
+window.addEventListener('cart.updated', () => {
+  const badge = document.querySelector('.cart-badge');
+  if (badge) {
+    badge.classList.remove('animate-scale-in');
+    void badge.offsetWidth; // Trigger reflow
+    badge.classList.add('animate-scale-in');
+  }
+});
+
+// Sticky header on scroll
+let lastScroll = 0;
+const mainNav = document.getElementById('mainnav');
+
+window.addEventListener('scroll', () => {
+  const currentScroll = window.pageYOffset;
+
+  if (currentScroll > 100) {
+    mainNav.classList.add('scrolled');
+  } else {
+    mainNav.classList.remove('scrolled');
+  }
+
+  lastScroll = currentScroll;
+});
+</script>

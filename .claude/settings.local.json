@@ -3,7 +3,8 @@
     "allow": [
       "Bash(time pnpm run build)",
       "Bash(tee build-output.log)",
-      "Bash(pnpm run format:check)"
+      "Bash(pnpm run format:check)",
+      "Bash(pnpm add -D @testing-library/jest-dom)"
     ],
     "deny": [],
     "ask": []

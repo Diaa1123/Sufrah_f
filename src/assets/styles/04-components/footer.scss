@@ -47,3 +47,230 @@
 .copyright-text p{
   @apply text-gray-700;
 }
+
+/**
+ * Restaurant Footer Enhancements
+ */
+
+.restaurant-footer {
+  // Override default dark background
+  @apply bg-gray-900 text-gray-300;
+
+  a {
+    @apply transition-colors hover:text-white;
+  }
+
+  h3, h4 {
+    @apply text-white;
+  }
+
+  // Contact links with icon colors
+  .group {
+    i {
+      transition: all 0.3s ease;
+    }
+
+    &:hover i {
+      transform: scale(1.1);
+    }
+  }
+
+  // Footer menu styling
+  .footer-menu {
+    salla-menu {
+      a {
+        @apply block py-2 text-sm text-gray-400 hover:text-white transition-colors;
+      }
+    }
+  }
+
+  // Business hours widget in footer
+  .bg-gray-800 {
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  // Social media icons
+  salla-social {
+    --social-icon-size: 2rem;
+    --social-icon-gap: 0.75rem;
+
+    a {
+      @apply hover:scale-110 transition-transform;
+    }
+  }
+
+  // Trust badges
+  salla-trust-badges {
+    opacity: 0.9;
+    transition: opacity 0.3s ease;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  // Payment methods
+  salla-payments {
+    img {
+      @apply opacity-90 hover:opacity-100 transition-opacity;
+    }
+  }
+
+  // Newsletter form (if enabled)
+  form {
+    input[type="email"] {
+      &:focus {
+        @apply border-primary-500 ring-1 ring-primary-500;
+      }
+    }
+  }
+}
+
+// Back to top button
+.back-to-top-btn {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+  }
+
+  &:active {
+    transform: translateY(-2px);
+  }
+
+  &.opacity-0 {
+    pointer-events: none;
+  }
+
+  &.opacity-100 {
+    pointer-events: auto;
+    animation: fadeInUp 0.3s ease;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+// Delivery banner animation
+.bg-primary-900 {
+  animation: slideInUp 0.5s ease-out;
+
+  @keyframes slideInUp {
+    from {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .restaurant-footer {
+    .store-footer__inner {
+      padding-top: 2rem;
+      padding-bottom: 2rem;
+    }
+
+    h3 {
+      font-size: 1rem;
+      margin-bottom: 0.75rem;
+    }
+
+    // Stack newsletter form on mobile
+    form {
+      flex-direction: column;
+      gap: 0.5rem;
+
+      input[type="email"],
+      salla-button {
+        width: 100%;
+      }
+    }
+  }
+
+  .back-to-top-btn {
+    width: 2.5rem;
+    height: 2.5rem;
+    bottom: 1rem;
+
+    [dir="rtl"] & {
+      left: 1rem;
+    }
+
+    [dir="ltr"] & {
+      right: 1rem;
+    }
+  }
+}
+
+// RTL specific adjustments
+[dir="rtl"] {
+  .restaurant-footer {
+    .mobile-footer-menu {
+      salla-menu a {
+        text-align: right;
+      }
+    }
+  }
+}
+
+// Dark mode specific (already dark, but ensure consistency)
+@media (prefers-color-scheme: dark) {
+  .restaurant-footer {
+    @apply bg-gray-950;
+  }
+}
+
+// High contrast mode
+@media (prefers-contrast: high) {
+  .restaurant-footer {
+    border-top: 2px solid white;
+
+    a:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+// Print styles
+@media print {
+  .restaurant-footer {
+    // Hide back to top button
+    .back-to-top-btn {
+      display: none !important;
+    }
+
+    // Simplify footer for print
+    .store-footer__inner {
+      padding: 1rem 0;
+    }
+
+    // Hide social media and apps
+    salla-social,
+    salla-apps-icons,
+    .bg-primary-900 {
+      display: none !important;
+    }
+
+    // Show only essential contact info
+    background: white !important;
+    color: black !important;
+
+    * {
+      color: black !important;
+    }
+  }
+}
