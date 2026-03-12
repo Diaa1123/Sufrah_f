@@ -6,7 +6,7 @@ const CopyPlugin = require('copy-webpack-plugin');
 const path = require('path');
 
 const asset = file => path.resolve('src/assets', file || '');
-const dist = file => path.resolve("dist/assets", file || '');
+const dist = file => path.resolve("assets", file || '');
 
 module.exports = {
     entry  : {
@@ -65,7 +65,7 @@ module.exports = {
     plugins: [
         new ThemeWatcher(),
         new MiniCssExtractPlugin(),
-        new CopyPlugin({patterns: [{from: asset('images'), to: path.resolve('dist', 'images')}]}),
+        new CopyPlugin({patterns: [{from: asset('images'), to: path.resolve('assets', 'images')}]}),
     ],
     optimization: {
         // ✅ Code Splitting Configuration

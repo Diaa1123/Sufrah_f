@@ -11,12 +11,12 @@
     "support_url": "https://github.com/Diaa1123/Sufrah_f/issues",
     "assets": {
         "css": [
-            "dist/assets/app.css"
+            "assets/app.css"
         ],
         "js": [
-            "dist/assets/runtime.js",
-            "dist/assets/vendors.js",
-            "dist/assets/app.js"
+            "assets/runtime.js",
+            "assets/vendors.js",
+            "assets/app.js"
         ]
     },
     "description": {
