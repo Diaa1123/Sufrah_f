@@ -5,8 +5,7 @@ module.exports = {
     content: [
         "src/views/**/*.twig",
         "src/assets/js/**/*.js",
-        // ⚠️ Salla safelist commented out to allow Twilight plugin to work properly
-        // The Twilight plugin provides primary/secondary/accent colors dynamically
+
         // 'node_modules/@salla.sa/twilight-tailwind-theme/safe-list-css.txt',
     ],
 
