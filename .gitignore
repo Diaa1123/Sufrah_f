@@ -1,0 +1,94 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+.pnpm-debug.log
+
+# Build outputs
+public/
+dist/
+build/
+*.compiled.*
+
+# Environment variables
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+
+# IDE and Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+*~
+.DS_Store
+*.sublime-project
+*.sublime-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Testing
+coverage/
+.nyc_output/
+*.lcov
+
+# Temporary files
+*.tmp
+.cache/
+.temp/
+tmp/
+
+# Salla specific
+.salla/
+salla.config.local.json
+
+# Webpack
+.webpack/
+webpack-stats.json
+
+# CSS and SCSS compiled
+*.css.map
+*.scss.map
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# macOS
+.AppleDouble
+.LSOverride
+
+# Windows
+ehthumbs.db
+ehthumbs_vista.db
+
+# Package manager files
+package-lock.json
+yarn.lock
+
+# Production settings (keep example files)
+settings.json
+twilight.local.json
+
+# Documentation builds
+docs/.vitepress/dist/
+docs/.vitepress/cache/
+
+# Test outputs
+test-results/
+playwright-report/

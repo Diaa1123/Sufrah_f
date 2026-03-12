@@ -1,0 +1,105 @@
+{
+  "theme_info": {
+    "name": "Sufrah",
+    "version": "1.0.0",
+    "author": "Diaa",
+    "description": "First specialized restaurant theme for Salla platform"
+  },
+  "restaurant_settings": {
+    "modifiers": {
+      "enabled": true,
+      "show_images": true,
+      "allow_notes": true,
+      "max_selections_per_group": 10
+    },
+    "delivery": {
+      "zones_enabled": true,
+      "show_map": false,
+      "auto_detect_zone": false,
+      "default_fee": 15,
+      "free_delivery_threshold": 150
+    },
+    "scheduling": {
+      "enabled": false,
+      "min_hours_advance": 2,
+      "max_days_advance": 7,
+      "time_slots_interval": 30,
+      "blackout_dates": []
+    },
+    "business_hours": {
+      "enabled": true,
+      "show_widget": true,
+      "auto_update_interval": 60000,
+      "hide_when_open_24_7": false
+    },
+    "menu": {
+      "show_categories_nav": true,
+      "sticky_nav": true,
+      "show_calories": true,
+      "show_prep_time": true,
+      "show_allergens": true,
+      "show_ingredients": false
+    },
+    "product_card": {
+      "style": "default",
+      "show_quick_add": true,
+      "show_wishlist": true,
+      "image_aspect_ratio": "4:3",
+      "hover_effect": "zoom"
+    }
+  },
+  "design_settings": {
+    "colors": {
+      "primary": "#FF6B35",
+      "secondary": "#F7931E",
+      "accent": "#FBB03B",
+      "success": "#10B981",
+      "error": "#EF4444",
+      "warning": "#F59E0B"
+    },
+    "typography": {
+      "font_family_ar": "Cairo",
+      "font_family_en": "Poppins",
+      "base_font_size": "16px",
+      "heading_font_weight": "600"
+    },
+    "spacing": {
+      "container_padding": "1rem",
+      "section_spacing": "3rem",
+      "card_gap": "1.5rem"
+    },
+    "borders": {
+      "radius_small": "0.375rem",
+      "radius_medium": "0.5rem",
+      "radius_large": "0.75rem"
+    }
+  },
+  "performance": {
+    "lazy_load_images": true,
+    "cache_ttl": 300,
+    "minify_assets": true,
+    "preload_critical_fonts": true
+  },
+  "features": {
+    "dark_mode": false,
+    "wishlist": true,
+    "compare_products": false,
+    "product_reviews": true,
+    "social_sharing": true,
+    "newsletter_popup": false
+  },
+  "integrations": {
+    "google_analytics": {
+      "enabled": false,
+      "tracking_id": ""
+    },
+    "facebook_pixel": {
+      "enabled": false,
+      "pixel_id": ""
+    },
+    "whatsapp": {
+      "enabled": false,
+      "phone_number": ""
+    }
+  }
+}

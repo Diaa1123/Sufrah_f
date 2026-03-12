@@ -1,0 +1,82 @@
+{
+  "blocks": {
+    "header": {
+      "cart": "Cart"
+    },
+    "appBanner": {
+      "download_now": "download now"
+    }
+  },
+  "pages": {
+    "cart": {
+      "cart_options": "Cart Options"
+    },
+    "order": {
+      "can_edit_or_delete_your_review_within": "You can edit or delete your review within",
+      "edit_period_ended": "The period to edit the review has ended",
+      "delete_period_ended": "The period to delete the review has ended",
+      "days_since_added": "days since it was added",
+      "option_name": "Option name",
+      "option_content": "Content"
+    }
+  },
+  "common": {
+    "bank_offer_sub_title_multiple": "Pay for your purchases via one of the following bank cards and get the specified discount",
+    "bank_offer_sub_title_single": "Pay for your purchases via :bank_name bank card and get discount"
+  },
+  "restaurant": {
+    "modifiers": {
+      "title": "Additional Options",
+      "required": "Required",
+      "optional": "Optional",
+      "select_options": "Select your options",
+      "add_to_cart": "Add to Cart",
+      "extra_price": "+ :price SAR",
+      "size": "Size",
+      "spice_level": "Spice Level",
+      "toppings": "Toppings",
+      "sauces": "Sauces"
+    },
+    "delivery": {
+      "delivery_zones": "Delivery Zones",
+      "select_zone": "Select your zone",
+      "delivery_fee": "Delivery Fee",
+      "estimated_time": "Estimated Delivery Time",
+      "minutes": "minutes",
+      "not_available": "Delivery not available for this area"
+    },
+    "scheduling": {
+      "schedule_order": "Schedule Order",
+      "order_now": "Order Now",
+      "order_later": "Order Later",
+      "select_date": "Select Date",
+      "select_time": "Select Time",
+      "asap": "ASAP"
+    },
+    "business_hours": {
+      "open_now": "Open Now",
+      "closed_now": "Closed Now",
+      "opens_at": "Opens at :time",
+      "closes_at": "Closes at :time",
+      "working_hours": "Working Hours",
+      "open_24_hours": "Open 24 Hours"
+    },
+    "menu": {
+      "categories": "Categories",
+      "all_items": "All Items",
+      "appetizers": "Appetizers",
+      "main_dishes": "Main Dishes",
+      "desserts": "Desserts",
+      "beverages": "Beverages",
+      "popular": "Popular",
+      "new": "New"
+    },
+    "product": {
+      "serves": "Serves :count people",
+      "calories": ":count calories",
+      "preparation_time": "Prep time: :time minutes",
+      "ingredients": "Ingredients",
+      "allergens": "Allergens"
+    }
+  }
+}

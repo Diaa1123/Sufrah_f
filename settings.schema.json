@@ -1,0 +1,565 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://sufrah.sa/settings.schema.json",
+  "title": "Sufrah Restaurant Settings",
+  "description": "Complete settings schema for Sufrah restaurant theme on Salla platform",
+  "type": "object",
+
+  "definitions": {
+    "timePattern": {
+      "type": "string",
+      "pattern": "^([01]?[0-9]|2[0-3]):[0-5][0-9]$",
+      "description": "Time in HH:MM format (24-hour)"
+    },
+    "colorHex": {
+      "type": "string",
+      "pattern": "^#[0-9A-Fa-f]{6}$",
+      "description": "Hex color code"
+    },
+    "daySchedule": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Whether the restaurant is open on this day"
+        },
+        "open": {
+          "$ref": "#/definitions/timePattern",
+          "description": "Opening time"
+        },
+        "close": {
+          "$ref": "#/definitions/timePattern",
+          "description": "Closing time"
+        },
+        "breaks": {
+          "type": "array",
+          "description": "Break periods during the day (e.g., lunch break)",
+          "items": {
+            "type": "object",
+            "properties": {
+              "start": {"$ref": "#/definitions/timePattern"},
+              "end": {"$ref": "#/definitions/timePattern"}
+            },
+            "required": ["start", "end"]
+          }
+        }
+      },
+      "required": ["enabled", "open", "close"]
+    }
+  },
+
+  "properties": {
+    "restaurant": {
+      "type": "object",
+      "description": "Basic restaurant information",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 100,
+          "description": "Restaurant name in Arabic"
+        },
+        "name_en": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 100,
+          "description": "Restaurant name in English"
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 500,
+          "description": "Restaurant description in Arabic"
+        },
+        "description_en": {
+          "type": "string",
+          "maxLength": 500,
+          "description": "Restaurant description in English"
+        },
+        "phone": {
+          "type": "string",
+          "pattern": "^\\+?[0-9]{10,15}$",
+          "description": "Contact phone number with country code"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "Contact email address"
+        },
+        "whatsapp": {
+          "type": "string",
+          "pattern": "^\\+?[0-9]{10,15}$",
+          "description": "WhatsApp number"
+        },
+        "address": {
+          "type": "string",
+          "maxLength": 300,
+          "description": "Physical address"
+        },
+        "address_en": {
+          "type": "string",
+          "maxLength": 300,
+          "description": "Physical address in English"
+        },
+        "coordinates": {
+          "type": "object",
+          "description": "GPS coordinates for delivery and mapping",
+          "properties": {
+            "lat": {
+              "type": "number",
+              "minimum": -90,
+              "maximum": 90,
+              "description": "Latitude"
+            },
+            "lng": {
+              "type": "number",
+              "minimum": -180,
+              "maximum": 180,
+              "description": "Longitude"
+            }
+          },
+          "required": ["lat", "lng"]
+        },
+        "social_media": {
+          "type": "object",
+          "description": "Social media links",
+          "properties": {
+            "instagram": {"type": "string", "format": "uri"},
+            "twitter": {"type": "string", "format": "uri"},
+            "facebook": {"type": "string", "format": "uri"},
+            "snapchat": {"type": "string"},
+            "tiktok": {"type": "string", "format": "uri"}
+          }
+        }
+      },
+      "required": ["name", "phone"]
+    },
+
+    "business_hours": {
+      "type": "object",
+      "description": "Restaurant operating hours",
+      "properties": {
+        "timezone": {
+          "type": "string",
+          "default": "Asia/Riyadh",
+          "enum": ["Asia/Riyadh", "Asia/Dubai", "Asia/Kuwait", "Asia/Qatar", "Asia/Bahrain"],
+          "description": "Timezone for business hours"
+        },
+        "days": {
+          "type": "object",
+          "description": "Schedule for each day of the week",
+          "properties": {
+            "saturday": {"$ref": "#/definitions/daySchedule"},
+            "sunday": {"$ref": "#/definitions/daySchedule"},
+            "monday": {"$ref": "#/definitions/daySchedule"},
+            "tuesday": {"$ref": "#/definitions/daySchedule"},
+            "wednesday": {"$ref": "#/definitions/daySchedule"},
+            "thursday": {"$ref": "#/definitions/daySchedule"},
+            "friday": {"$ref": "#/definitions/daySchedule"}
+          },
+          "required": ["saturday", "sunday", "monday", "tuesday", "wednesday", "thursday", "friday"]
+        },
+        "special_days": {
+          "type": "array",
+          "description": "Special hours for holidays, events, etc.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "date": {
+                "type": "string",
+                "format": "date",
+                "description": "Date in YYYY-MM-DD format"
+              },
+              "name": {
+                "type": "string",
+                "description": "Holiday/event name"
+              },
+              "enabled": {
+                "type": "boolean",
+                "description": "Whether open on this day"
+              },
+              "open": {"$ref": "#/definitions/timePattern"},
+              "close": {"$ref": "#/definitions/timePattern"}
+            },
+            "required": ["date", "enabled"]
+          }
+        }
+      },
+      "required": ["timezone", "days"]
+    },
+
+    "delivery_zones": {
+      "type": "array",
+      "description": "Available delivery zones with pricing",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique zone identifier"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 100,
+            "description": "Zone name in Arabic"
+          },
+          "name_en": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 100,
+            "description": "Zone name in English"
+          },
+          "price": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1000,
+            "description": "Delivery fee in SAR"
+          },
+          "min_order": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Minimum order amount for this zone"
+          },
+          "free_delivery_threshold": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Order amount for free delivery"
+          },
+          "estimated_time": {
+            "type": "string",
+            "pattern": "^[0-9]+-[0-9]+.*$",
+            "description": "Estimated delivery time range (e.g., '30-45 دقيقة')"
+          },
+          "estimated_time_min": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Minimum delivery time in minutes"
+          },
+          "estimated_time_max": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Maximum delivery time in minutes"
+          },
+          "enabled": {
+            "type": "boolean",
+            "default": true,
+            "description": "Whether this zone is currently active"
+          },
+          "coverage_polygon": {
+            "type": "array",
+            "description": "Geographic coordinates defining zone boundary",
+            "items": {
+              "type": "object",
+              "properties": {
+                "lat": {"type": "number"},
+                "lng": {"type": "number"}
+              },
+              "required": ["lat", "lng"]
+            }
+          }
+        },
+        "required": ["id", "name", "price", "min_order"]
+      }
+    },
+
+    "scheduling": {
+      "type": "object",
+      "description": "Advance order scheduling settings",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable/disable advance scheduling"
+        },
+        "min_advance_hours": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 48,
+          "default": 2,
+          "description": "Minimum hours in advance to place order"
+        },
+        "max_advance_days": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 30,
+          "default": 7,
+          "description": "Maximum days in advance to schedule"
+        },
+        "slot_interval_minutes": {
+          "type": "number",
+          "enum": [15, 30, 60],
+          "default": 30,
+          "description": "Time slot intervals in minutes"
+        },
+        "buffer_time_minutes": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 60,
+          "default": 15,
+          "description": "Buffer time between orders"
+        },
+        "blackout_dates": {
+          "type": "array",
+          "description": "Dates when scheduling is not available",
+          "items": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        "same_day_cutoff_time": {
+          "$ref": "#/definitions/timePattern",
+          "description": "Last time to accept same-day orders"
+        }
+      },
+      "required": ["enabled"]
+    },
+
+    "modifiers": {
+      "type": "object",
+      "description": "Product modifiers and customization settings",
+      "properties": {
+        "show_calories": {
+          "type": "boolean",
+          "default": true,
+          "description": "Display calorie information"
+        },
+        "show_ingredients": {
+          "type": "boolean",
+          "default": true,
+          "description": "Display ingredient lists"
+        },
+        "show_allergens": {
+          "type": "boolean",
+          "default": true,
+          "description": "Display allergen warnings"
+        },
+        "show_prep_time": {
+          "type": "boolean",
+          "default": true,
+          "description": "Display preparation time"
+        },
+        "allow_special_instructions": {
+          "type": "boolean",
+          "default": true,
+          "description": "Allow customer order notes"
+        },
+        "max_instructions_length": {
+          "type": "number",
+          "minimum": 50,
+          "maximum": 500,
+          "default": 200,
+          "description": "Maximum characters for special instructions"
+        },
+        "spice_levels": {
+          "type": "array",
+          "description": "Available spice level options",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {"type": "string"},
+              "name": {"type": "string"},
+              "name_en": {"type": "string"},
+              "icon": {"type": "string"}
+            }
+          }
+        }
+      }
+    },
+
+    "appearance": {
+      "type": "object",
+      "description": "Theme appearance settings",
+      "properties": {
+        "primary_color": {
+          "$ref": "#/definitions/colorHex",
+          "default": "#D97706",
+          "description": "Primary brand color"
+        },
+        "secondary_color": {
+          "$ref": "#/definitions/colorHex",
+          "default": "#059669",
+          "description": "Secondary accent color"
+        },
+        "logo_url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Restaurant logo URL"
+        },
+        "logo_dark_url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Logo for dark backgrounds"
+        },
+        "favicon_url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Favicon URL"
+        },
+        "hero_image_url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Homepage hero image"
+        },
+        "default_product_image": {
+          "type": "string",
+          "format": "uri",
+          "description": "Fallback product image"
+        }
+      }
+    },
+
+    "notifications": {
+      "type": "object",
+      "description": "Notification preferences",
+      "properties": {
+        "order_placed": {
+          "type": "object",
+          "properties": {
+            "customer": {"type": "boolean", "default": true},
+            "admin": {"type": "boolean", "default": true},
+            "whatsapp": {"type": "boolean", "default": false}
+          }
+        },
+        "order_confirmed": {
+          "type": "object",
+          "properties": {
+            "customer": {"type": "boolean", "default": true}
+          }
+        },
+        "order_ready": {
+          "type": "object",
+          "properties": {
+            "customer": {"type": "boolean", "default": true},
+            "whatsapp": {"type": "boolean", "default": true}
+          }
+        },
+        "order_out_for_delivery": {
+          "type": "object",
+          "properties": {
+            "customer": {"type": "boolean", "default": true}
+          }
+        },
+        "order_delivered": {
+          "type": "object",
+          "properties": {
+            "customer": {"type": "boolean", "default": true}
+          }
+        }
+      }
+    },
+
+    "features": {
+      "type": "object",
+      "description": "Optional feature toggles",
+      "properties": {
+        "loyalty_program": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable loyalty points system"
+        },
+        "gift_cards": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable gift card purchases"
+        },
+        "table_reservations": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable table booking"
+        },
+        "catering": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable catering orders"
+        },
+        "pickup": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable pickup orders"
+        },
+        "dine_in": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable dine-in orders"
+        }
+      }
+    },
+
+    "payment": {
+      "type": "object",
+      "description": "Payment and pricing settings",
+      "properties": {
+        "currency": {
+          "type": "string",
+          "default": "SAR",
+          "enum": ["SAR", "AED", "KWD", "BHD", "QAR", "OMR"],
+          "description": "Currency code"
+        },
+        "tax_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "default": 15,
+          "description": "VAT/Tax rate percentage"
+        },
+        "min_order_amount": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Minimum order amount across all zones"
+        },
+        "service_fee": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Fixed service fee per order"
+        },
+        "service_fee_percentage": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Service fee as percentage of order"
+        }
+      }
+    },
+
+    "integrations": {
+      "type": "object",
+      "description": "Third-party integrations",
+      "properties": {
+        "google_analytics": {
+          "type": "object",
+          "properties": {
+            "enabled": {"type": "boolean", "default": false},
+            "tracking_id": {"type": "string", "pattern": "^UA-|^G-"}
+          }
+        },
+        "facebook_pixel": {
+          "type": "object",
+          "properties": {
+            "enabled": {"type": "boolean", "default": false},
+            "pixel_id": {"type": "string"}
+          }
+        },
+        "snapchat_pixel": {
+          "type": "object",
+          "properties": {
+            "enabled": {"type": "boolean", "default": false},
+            "pixel_id": {"type": "string"}
+          }
+        },
+        "whatsapp_api": {
+          "type": "object",
+          "properties": {
+            "enabled": {"type": "boolean", "default": false},
+            "api_key": {"type": "string"},
+            "phone_number": {"type": "string"}
+          }
+        }
+      }
+    }
+  },
+
+  "required": ["restaurant", "business_hours", "delivery_zones"],
+
+  "additionalProperties": true
+}

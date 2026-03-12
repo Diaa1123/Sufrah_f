@@ -1,0 +1,337 @@
+{#
+  Sufrah Settings Helper Functions
+  Twig macros for accessing theme settings throughout templates
+
+  Usage: {% import 'helpers/settings.twig' as settings %}
+
+  @version 1.0.0
+  @author Diaa
+#}
+
+{#
+  Get a setting value with optional default
+  Usage: {{ settings.get('restaurant.name', 'Default Name') }}
+#}
+{% macro get(path, default = null) %}
+  {%- set value = salla.config.get(path, default) -%}
+  {{- value -}}
+{% endmacro %}
+
+{#
+  Check if restaurant is currently open
+  Returns: true or false
+#}
+{% macro is_restaurant_open() %}
+  {%- set now = "now"|date("U") -%}
+  {%- set day_name = "now"|date("l")|lower -%}
+  {%- set current_time = "now"|date("H:i") -%}
+
+  {%- set hours = salla.config.get('business_hours.days.' ~ day_name) -%}
+
+  {%- if hours and hours.enabled -%}
+    {%- if current_time >= hours.open and current_time < hours.close -%}
+      {%- set is_open = true -%}
+      {#- Check for break periods -#}
+      {%- if hours.breaks -%}
+        {%- for break_period in hours.breaks -%}
+          {%- if current_time >= break_period.start and current_time < break_period.end -%}
+            {%- set is_open = false -%}
+          {%- endif -%}
+        {%- endfor -%}
+      {%- endif -%}
+      {{- is_open ? 'true' : 'false' -}}
+    {%- else -%}
+      false
+    {%- endif -%}
+  {%- else -%}
+    false
+  {%- endif -%}
+{% endmacro %}
+
+{#
+  Get open/closed status as formatted text
+  Returns: HTML span with status
+#}
+{% macro get_open_status_text() %}
+  {% import _self as settings %}
+
+  {% if settings.is_restaurant_open() == 'true' %}
+    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+      <svg class="w-2 h-2 mr-1" fill="currentColor" viewBox="0 0 8 8">
+        <circle cx="4" cy="4" r="3" />
+      </svg>
+      {{ trans('restaurant.business_hours.open_now') }}
+    </span>
+  {% else %}
+    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+      <svg class="w-2 h-2 mr-1" fill="currentColor" viewBox="0 0 8 8">
+        <circle cx="4" cy="4" r="3" />
+      </svg>
+      {{ trans('restaurant.business_hours.closed_now') }}
+    </span>
+  {% endif %}
+{% endmacro %}
+
+{#
+  Get next opening/closing time message
+  Returns: Formatted message
+#}
+{% macro get_next_time_message() %}
+  {% import _self as settings %}
+  {%- set is_open = settings.is_restaurant_open() == 'true' -%}
+  {%- set day_name = "now"|date("l")|lower -%}
+  {%- set current_time = "now"|date("H:i") -%}
+  {%- set hours = salla.config.get('business_hours.days.' ~ day_name) -%}
+
+  {% if is_open and hours %}
+    <span class="text-sm text-gray-600">
+      {{ trans('restaurant.business_hours.closes_at', {time: hours.close}) }}
+    </span>
+  {% elseif hours and hours.enabled %}
+    <span class="text-sm text-gray-600">
+      {{ trans('restaurant.business_hours.opens_at', {time: hours.open}) }}
+    </span>
+  {% endif %}
+{% endmacro %}
+
+{#
+  Format delivery time string
+  Usage: {{ settings.format_delivery_time(zone) }}
+#}
+{% macro format_delivery_time(zone) %}
+  {%- if zone.estimated_time -%}
+    {{ zone.estimated_time }}
+  {%- elseif zone.estimated_time_min and zone.estimated_time_max -%}
+    {{ zone.estimated_time_min }}-{{ zone.estimated_time_max }} {{ trans('restaurant.delivery.minutes') }}
+  {%- else -%}
+    30-45 {{ trans('restaurant.delivery.minutes') }}
+  {%- endif -%}
+{% endmacro %}
+
+{#
+  Get delivery zone by ID
+  Returns: Zone object or null
+#}
+{% macro get_delivery_zone(zone_id) %}
+  {%- set zones = salla.config.get('delivery_zones', []) -%}
+  {%- for zone in zones -%}
+    {%- if zone.id == zone_id -%}
+      {{- zone|json_encode -}}
+    {%- endif -%}
+  {%- endfor -%}
+{% endmacro %}
+
+{#
+  Check if delivery zone is valid for cart total
+  Returns: Object with {valid: bool, message: string}
+#}
+{% macro validate_delivery_zone(zone_id, cart_total) %}
+  {% import _self as settings %}
+  {%- set zone_json = settings.get_delivery_zone(zone_id) -%}
+  {%- if zone_json -%}
+    {%- set zone = zone_json|json_decode -%}
+
+    {%- if not zone.enabled -%}
+      {{ {valid: false, message: trans('restaurant.delivery.not_available')}|json_encode }}
+    {%- elseif cart_total < zone.min_order -%}
+      {{ {valid: false, message: trans('restaurant.delivery.min_order_not_met', {amount: zone.min_order})}|json_encode }}
+    {%- else -%}
+      {{ {valid: true, zone: zone}|json_encode }}
+    {%- endif -%}
+  {%- else -%}
+    {{ {valid: false, message: trans('restaurant.delivery.zone_not_found')}|json_encode }}
+  {%- endif -%}
+{% endmacro %}
+
+{#
+  Display business hours widget
+  Shows current status and hours for today
+#}
+{% macro business_hours_widget() %}
+  {% import _self as settings %}
+
+  <div class="business-hours-widget bg-white rounded-lg shadow-sm p-4 border border-gray-200">
+    <div class="flex items-center justify-between mb-3">
+      <h3 class="text-sm font-semibold text-gray-900">
+        {{ trans('restaurant.business_hours.working_hours') }}
+      </h3>
+      {{ settings.get_open_status_text() }}
+    </div>
+
+    {{ settings.get_next_time_message() }}
+
+    {%- set day_name = "now"|date("l")|lower -%}
+    {%- set today_hours = salla.config.get('business_hours.days.' ~ day_name) -%}
+
+    {% if today_hours and today_hours.enabled %}
+      <div class="mt-3 text-sm text-gray-600">
+        <div class="flex justify-between">
+          <span>{{ trans('common.today') }}</span>
+          <span class="font-medium">{{ today_hours.open }} - {{ today_hours.close }}</span>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+{% endmacro %}
+
+{#
+  Display full week schedule
+  Shows hours for all days of the week
+#}
+{% macro full_schedule() %}
+  {%- set days = {
+    'saturday': trans('common.days.saturday'),
+    'sunday': trans('common.days.sunday'),
+    'monday': trans('common.days.monday'),
+    'tuesday': trans('common.days.tuesday'),
+    'wednesday': trans('common.days.wednesday'),
+    'thursday': trans('common.days.thursday'),
+    'friday': trans('common.days.friday')
+  } -%}
+
+  <div class="full-schedule bg-white rounded-lg shadow-sm p-4 border border-gray-200">
+    <h3 class="text-sm font-semibold text-gray-900 mb-3">
+      {{ trans('restaurant.business_hours.working_hours') }}
+    </h3>
+
+    <div class="space-y-2">
+      {% for day_key, day_name in days %}
+        {%- set hours = salla.config.get('business_hours.days.' ~ day_key) -%}
+        <div class="flex justify-between items-center text-sm">
+          <span class="text-gray-700">{{ day_name }}</span>
+          {% if hours and hours.enabled %}
+            <span class="font-medium text-gray-900">
+              {{ hours.open }} - {{ hours.close }}
+            </span>
+          {% else %}
+            <span class="text-red-600">{{ trans('common.closed') }}</span>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+{% endmacro %}
+
+{#
+  Display delivery zones selector
+  Interactive zone selection component
+#}
+{% macro delivery_zones_selector(selected_zone_id = null) %}
+  {%- set zones = salla.config.get('delivery_zones', []) -%}
+
+  <div class="delivery-zones-selector">
+    <label class="block text-sm font-medium text-gray-700 mb-2">
+      {{ trans('restaurant.delivery.select_zone') }}
+    </label>
+
+    <select
+      name="delivery_zone"
+      id="delivery-zone-select"
+      class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-restaurant-500 focus:border-restaurant-500 sm:text-sm rounded-md"
+    >
+      <option value="">{{ trans('restaurant.delivery.select_zone') }}</option>
+      {% for zone in zones %}
+        {% if zone.enabled %}
+          <option
+            value="{{ zone.id }}"
+            data-price="{{ zone.price }}"
+            data-min-order="{{ zone.min_order }}"
+            data-time="{{ zone.estimated_time }}"
+            {% if selected_zone_id == zone.id %}selected{% endif %}
+          >
+            {{ zone.name }} - {{ zone.price }} {{ trans('common.currency') }}
+            ({{ trans('common.min_order') }}: {{ zone.min_order }} {{ trans('common.currency') }})
+          </option>
+        {% endif %}
+      {% endfor %}
+    </select>
+
+    <div id="zone-details" class="mt-2 text-sm text-gray-600 hidden">
+      <p id="zone-delivery-time"></p>
+    </div>
+  </div>
+{% endmacro %}
+
+{#
+  Check if a specific feature is enabled
+  Usage: {% if settings.is_feature_enabled('loyalty_program') %}
+#}
+{% macro is_feature_enabled(feature_name) %}
+  {{- salla.config.get('features.' ~ feature_name, false) ? 'true' : 'false' -}}
+{% endmacro %}
+
+{#
+  Get restaurant color scheme
+  Returns: Object with primary and secondary colors
+#}
+{% macro get_colors() %}
+  {{- {
+    primary: salla.config.get('restaurant_primary_color', '#D97706'),
+    secondary: salla.config.get('restaurant_secondary_color', '#059669')
+  }|json_encode -}}
+{% endmacro %}
+
+{#
+  Format currency amount
+  Usage: {{ settings.format_currency(150.50) }}
+#}
+{% macro format_currency(amount) %}
+  {%- set currency = salla.config.get('payment.currency', 'SAR') -%}
+  {{- amount|number_format(2) }}
+  {%- if currency == 'SAR' -%}
+    {{ trans('common.sar') }}
+  {%- else -%}
+    {{ currency }}
+  {%- endif -%}
+{% endmacro %}
+
+{#
+  Check if calories should be displayed
+#}
+{% macro should_show_calories() %}
+  {{- salla.config.get('show_calories', true) ? 'true' : 'false' -}}
+{% endmacro %}
+
+{#
+  Check if ingredients should be displayed
+#}
+{% macro should_show_ingredients() %}
+  {{- salla.config.get('show_ingredients', true) ? 'true' : 'false' -}}
+{% endmacro %}
+
+{#
+  Get max special instructions length
+#}
+{% macro get_max_instructions_length() %}
+  {{- salla.config.get('special_instructions_max_chars', 200) -}}
+{% endmacro %}
+
+{#
+  Display spice level indicator
+  Usage: {{ settings.spice_level_indicator('medium') }}
+#}
+{% macro spice_level_indicator(level) %}
+  {%- set spice_levels = salla.config.get('modifiers.spice_levels', []) -%}
+  {%- for spice in spice_levels -%}
+    {%- if spice.id == level -%}
+      <span class="inline-flex items-center text-sm text-spicy">
+        {{ spice.icon }}
+        <span class="ml-1">{{ spice.name }}</span>
+      </span>
+    {%- endif -%}
+  {%- endfor -%}
+{% endmacro %}
+
+{#
+  Get restaurant social media links
+  Returns: Object with social media URLs
+#}
+{% macro get_social_media() %}
+  {{- {
+    instagram: salla.config.get('restaurant.social_media.instagram', ''),
+    twitter: salla.config.get('restaurant.social_media.twitter', ''),
+    facebook: salla.config.get('restaurant.social_media.facebook', ''),
+    snapchat: salla.config.get('restaurant.social_media.snapchat', ''),
+    tiktok: salla.config.get('restaurant.social_media.tiktok', '')
+  }|json_encode -}}
+{% endmacro %}

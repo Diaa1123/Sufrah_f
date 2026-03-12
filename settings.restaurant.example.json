@@ -1,0 +1,287 @@
+{
+  "$schema": "./settings.schema.json",
+  "_comment": "Sufrah Restaurant Theme - Complete Settings Example",
+
+  "restaurant": {
+    "name": "مطعم الذواقة",
+    "name_en": "Gourmet Restaurant",
+    "description": "نقدم أشهى الأطباق العربية والعالمية المحضرة بأجود المكونات الطازجة",
+    "description_en": "Serving the finest Arabic and international dishes prepared with the freshest ingredients",
+    "phone": "+966501234567",
+    "email": "info@gourmet.sa",
+    "whatsapp": "+966501234567",
+    "address": "شارع التحلية، حي العليا، الرياض 12211",
+    "address_en": "Tahlia Street, Al Olaya District, Riyadh 12211",
+    "coordinates": {
+      "lat": 24.7136,
+      "lng": 46.6753
+    },
+    "social_media": {
+      "instagram": "https://instagram.com/gourmet_sa",
+      "twitter": "https://twitter.com/gourmet_sa",
+      "facebook": "https://facebook.com/gourmet.sa",
+      "snapchat": "gourmet.sa",
+      "tiktok": "https://tiktok.com/@gourmet.sa"
+    }
+  },
+
+  "business_hours": {
+    "timezone": "Asia/Riyadh",
+    "days": {
+      "saturday": {
+        "enabled": true,
+        "open": "09:00",
+        "close": "23:00",
+        "breaks": []
+      },
+      "sunday": {
+        "enabled": true,
+        "open": "09:00",
+        "close": "23:00",
+        "breaks": []
+      },
+      "monday": {
+        "enabled": true,
+        "open": "09:00",
+        "close": "23:00",
+        "breaks": []
+      },
+      "tuesday": {
+        "enabled": true,
+        "open": "09:00",
+        "close": "23:00",
+        "breaks": [
+          {
+            "start": "15:00",
+            "end": "17:00"
+          }
+        ]
+      },
+      "wednesday": {
+        "enabled": true,
+        "open": "09:00",
+        "close": "23:00",
+        "breaks": []
+      },
+      "thursday": {
+        "enabled": true,
+        "open": "09:00",
+        "close": "23:00",
+        "breaks": []
+      },
+      "friday": {
+        "enabled": true,
+        "open": "13:00",
+        "close": "23:00",
+        "breaks": []
+      }
+    },
+    "special_days": [
+      {
+        "date": "2026-06-15",
+        "name": "عيد الفطر",
+        "enabled": false
+      },
+      {
+        "date": "2026-09-23",
+        "name": "اليوم الوطني",
+        "enabled": true,
+        "open": "10:00",
+        "close": "22:00"
+      }
+    ]
+  },
+
+  "delivery_zones": [
+    {
+      "id": "zone-downtown",
+      "name": "وسط المدينة",
+      "name_en": "Downtown",
+      "price": 15,
+      "min_order": 50,
+      "free_delivery_threshold": 200,
+      "estimated_time": "30-45 دقيقة",
+      "estimated_time_min": 30,
+      "estimated_time_max": 45,
+      "enabled": true,
+      "coverage_polygon": [
+        {"lat": 24.7136, "lng": 46.6753},
+        {"lat": 24.7200, "lng": 46.6800},
+        {"lat": 24.7100, "lng": 46.6900},
+        {"lat": 24.7050, "lng": 46.6700}
+      ]
+    },
+    {
+      "id": "zone-north",
+      "name": "الحي الشمالي",
+      "name_en": "Northern District",
+      "price": 20,
+      "min_order": 70,
+      "free_delivery_threshold": 250,
+      "estimated_time": "45-60 دقيقة",
+      "estimated_time_min": 45,
+      "estimated_time_max": 60,
+      "enabled": true
+    },
+    {
+      "id": "zone-east",
+      "name": "الحي الشرقي",
+      "name_en": "Eastern District",
+      "price": 18,
+      "min_order": 60,
+      "free_delivery_threshold": 220,
+      "estimated_time": "40-55 دقيقة",
+      "estimated_time_min": 40,
+      "estimated_time_max": 55,
+      "enabled": true
+    },
+    {
+      "id": "zone-suburbs",
+      "name": "الضواحي",
+      "name_en": "Suburbs",
+      "price": 30,
+      "min_order": 100,
+      "free_delivery_threshold": 300,
+      "estimated_time": "60-75 دقيقة",
+      "estimated_time_min": 60,
+      "estimated_time_max": 75,
+      "enabled": true
+    },
+    {
+      "id": "zone-vip",
+      "name": "المناطق الراقية",
+      "name_en": "Premium Areas",
+      "price": 25,
+      "min_order": 80,
+      "free_delivery_threshold": 280,
+      "estimated_time": "35-50 دقيقة",
+      "estimated_time_min": 35,
+      "estimated_time_max": 50,
+      "enabled": true
+    }
+  ],
+
+  "scheduling": {
+    "enabled": true,
+    "min_advance_hours": 2,
+    "max_advance_days": 7,
+    "slot_interval_minutes": 30,
+    "buffer_time_minutes": 15,
+    "blackout_dates": [
+      "2026-06-15",
+      "2026-06-16",
+      "2026-06-17"
+    ],
+    "same_day_cutoff_time": "21:00"
+  },
+
+  "modifiers": {
+    "show_calories": true,
+    "show_ingredients": true,
+    "show_allergens": true,
+    "show_prep_time": true,
+    "allow_special_instructions": true,
+    "max_instructions_length": 200,
+    "spice_levels": [
+      {
+        "id": "mild",
+        "name": "خفيف",
+        "name_en": "Mild",
+        "icon": "🌶️"
+      },
+      {
+        "id": "medium",
+        "name": "متوسط",
+        "name_en": "Medium",
+        "icon": "🌶️🌶️"
+      },
+      {
+        "id": "hot",
+        "name": "حار",
+        "name_en": "Hot",
+        "icon": "🌶️🌶️🌶️"
+      },
+      {
+        "id": "extra-hot",
+        "name": "حار جداً",
+        "name_en": "Extra Hot",
+        "icon": "🌶️🌶️🌶️🔥"
+      }
+    ]
+  },
+
+  "appearance": {
+    "primary_color": "#D97706",
+    "secondary_color": "#059669",
+    "logo_url": "/images/restaurant/logo.png",
+    "logo_dark_url": "/images/restaurant/logo-dark.png",
+    "favicon_url": "/images/restaurant/favicon.ico",
+    "hero_image_url": "/images/restaurant/hero-main.jpg",
+    "default_product_image": "/images/restaurant/dish-placeholder.jpg"
+  },
+
+  "notifications": {
+    "order_placed": {
+      "customer": true,
+      "admin": true,
+      "whatsapp": true
+    },
+    "order_confirmed": {
+      "customer": true
+    },
+    "order_ready": {
+      "customer": true,
+      "whatsapp": true
+    },
+    "order_out_for_delivery": {
+      "customer": true
+    },
+    "order_delivered": {
+      "customer": true
+    }
+  },
+
+  "features": {
+    "loyalty_program": true,
+    "gift_cards": false,
+    "table_reservations": false,
+    "catering": true,
+    "pickup": true,
+    "dine_in": false
+  },
+
+  "payment": {
+    "currency": "SAR",
+    "tax_rate": 15,
+    "min_order_amount": 30,
+    "service_fee": 0,
+    "service_fee_percentage": 0
+  },
+
+  "integrations": {
+    "google_analytics": {
+      "enabled": true,
+      "tracking_id": "G-XXXXXXXXXX"
+    },
+    "facebook_pixel": {
+      "enabled": true,
+      "pixel_id": "1234567890"
+    },
+    "snapchat_pixel": {
+      "enabled": false,
+      "pixel_id": ""
+    },
+    "whatsapp_api": {
+      "enabled": true,
+      "api_key": "your-api-key-here",
+      "phone_number": "+966501234567"
+    }
+  },
+
+  "_metadata": {
+    "version": "1.0.0",
+    "last_updated": "2026-03-12",
+    "updated_by": "admin",
+    "environment": "production"
+  }
+}

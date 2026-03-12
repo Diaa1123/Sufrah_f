@@ -1,0 +1,82 @@
+{
+  "blocks": {
+    "header": {
+      "cart": "السلة"
+    },
+    "appBanner": {
+      "download_now": "حمله الان"
+    }
+  },
+  "pages": {
+    "cart": {
+      "cart_options": "خيارات السلة"
+    },
+    "order": {
+      "can_edit_or_delete_your_review_within": "يمكنك تعديل أو حذف تقييمك خلال",
+      "edit_period_ended": "تم انتهاء المدة المحددة لتعديل التقييم",
+      "delete_period_ended": "تم انتهاء المدة المحددة لحذف التقييم",
+      "days_since_added": "أيام من إضافته",
+      "option_name": "الخيار",
+      "option_content": "المحتوى"
+    }
+  },
+  "common": {
+    "bank_offer_sub_title_multiple": "ادفع قيمة مشترياتك عبر أحد البطاقات البنكة التالية واحصل على الخصم المحدد",
+    "bank_offer_sub_title_single": "ادفع قيمة مشترياتك عبر أحد بطاقات بنك :bank_name واحصل على خصم بنسبة "
+  },
+  "restaurant": {
+    "modifiers": {
+      "title": "خيارات إضافية",
+      "required": "مطلوب",
+      "optional": "اختياري",
+      "select_options": "اختر خياراتك",
+      "add_to_cart": "أضف إلى السلة",
+      "extra_price": "+ :price ر.س",
+      "size": "الحجم",
+      "spice_level": "درجة الحرارة",
+      "toppings": "الإضافات",
+      "sauces": "الصلصات"
+    },
+    "delivery": {
+      "delivery_zones": "مناطق التوصيل",
+      "select_zone": "اختر منطقتك",
+      "delivery_fee": "رسوم التوصيل",
+      "estimated_time": "الوقت المتوقع للتوصيل",
+      "minutes": "دقيقة",
+      "not_available": "التوصيل غير متاح لهذه المنطقة"
+    },
+    "scheduling": {
+      "schedule_order": "جدولة الطلب",
+      "order_now": "اطلب الآن",
+      "order_later": "اطلب لاحقاً",
+      "select_date": "اختر التاريخ",
+      "select_time": "اختر الوقت",
+      "asap": "في أقرب وقت"
+    },
+    "business_hours": {
+      "open_now": "مفتوح الآن",
+      "closed_now": "مغلق الآن",
+      "opens_at": "يفتح الساعة :time",
+      "closes_at": "يغلق الساعة :time",
+      "working_hours": "ساعات العمل",
+      "open_24_hours": "مفتوح 24 ساعة"
+    },
+    "menu": {
+      "categories": "الفئات",
+      "all_items": "جميع الأصناف",
+      "appetizers": "المقبلات",
+      "main_dishes": "الأطباق الرئيسية",
+      "desserts": "الحلويات",
+      "beverages": "المشروبات",
+      "popular": "الأكثر طلباً",
+      "new": "جديد"
+    },
+    "product": {
+      "serves": "يكفي لـ :count أشخاص",
+      "calories": ":count سعرة حرارية",
+      "preparation_time": "وقت التحضير: :time دقيقة",
+      "ingredients": "المكونات",
+      "allergens": "المواد المسببة للحساسية"
+    }
+  }
+}
