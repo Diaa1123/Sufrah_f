@@ -11,25 +11,25 @@
     "support_url": "https://github.com/Diaa1123/Sufrah_f/issues",
     "assets": {
         "css": [
-            "assets/app.css"
+            "app.css"
         ],
         "js": [
-            "assets/runtime.js",
-            "assets/vendors.js",
-            "assets/common.js",
-            "assets/app.js",
-            "assets/product-card.js",
-            "assets/main-menu.js",
-            "assets/restaurant-systems.js",
-            "assets/add-product-toast.js",
-            "assets/home.js",
-            "assets/product.js",
-            "assets/checkout.js",
-            "assets/pages.js",
-            "assets/order.js",
-            "assets/digital-files.js",
-            "assets/testimonials.js",
-            "assets/wishlist-card.js"
+            "runtime.js",
+            "vendors.js",
+            "common.js",
+            "app.js",
+            "product-card.js",
+            "main-menu.js",
+            "restaurant-systems.js",
+            "add-product-toast.js",
+            "home.js",
+            "product.js",
+            "checkout.js",
+            "pages.js",
+            "order.js",
+            "digital-files.js",
+            "testimonials.js",
+            "wishlist-card.js"
         ]
     },
     "description": {
