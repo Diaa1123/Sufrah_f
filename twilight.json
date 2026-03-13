@@ -16,7 +16,20 @@
         "js": [
             "assets/runtime.js",
             "assets/vendors.js",
-            "assets/app.js"
+            "assets/common.js",
+            "assets/app.js",
+            "assets/product-card.js",
+            "assets/main-menu.js",
+            "assets/restaurant-systems.js",
+            "assets/add-product-toast.js",
+            "assets/home.js",
+            "assets/product.js",
+            "assets/checkout.js",
+            "assets/pages.js",
+            "assets/order.js",
+            "assets/digital-files.js",
+            "assets/testimonials.js",
+            "assets/wishlist-card.js"
         ]
     },
     "description": {
