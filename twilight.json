@@ -9,16 +9,6 @@
     "preview_url": "https://salla.sa/dev-lgeeymgfcresnou8",
     "documentation_url": "https://github.com/Diaa1123/Sufrah_f/blob/main/README.md",
     "support_url": "https://github.com/Diaa1123/Sufrah_f/issues",
-    "assets": {
-        "css": [
-            "app.css"
-        ],
-        "js": [
-          "/runtime.js",
-        "/vendors.js",
-        "/app.js"
-        ]
-    },
     "description": {
         "ar": "أول قالب متخصص للمطاعم والمطابخ السحابية على منصة سلة - وفّر عمولات التوصيل وابنِ قناة مبيعات مباشرة مع نظام الإضافات وإدارة التوصيل",
         "en": "First specialized restaurant theme on Salla platform - Save delivery commissions and build direct sales with modifiers system and delivery management"
