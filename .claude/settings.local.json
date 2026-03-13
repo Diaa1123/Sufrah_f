@@ -4,7 +4,8 @@
       "Bash(time pnpm run build)",
       "Bash(tee build-output.log)",
       "Bash(pnpm run format:check)",
-      "Bash(pnpm add -D @testing-library/jest-dom)"
+      "Bash(pnpm add -D @testing-library/jest-dom)",
+      "Read(//c/Users/diaal/Downloads/tamplate/**)"
     ],
     "deny": [],
     "ask": []
