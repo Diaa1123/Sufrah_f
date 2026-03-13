@@ -4,7 +4,7 @@ node_modules/
 .pnpm-debug.log
 
 # Build outputs
-public/
+# NOTE: public/ is NOT ignored - it needs to be committed for Salla Portal GitHub sync
 dist/
 build/
 *.compiled.*

@@ -5,8 +5,6 @@ module.exports = {
     content: [
         "src/views/**/*.twig",
         "src/assets/js/**/*.js",
-
-        // 'node_modules/@salla.sa/twilight-tailwind-theme/safe-list-css.txt',
     ],
 
     // ✅ Safelist ONLY dynamic/necessary classes
