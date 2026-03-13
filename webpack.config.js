@@ -74,7 +74,12 @@ module.exports = {
     plugins: [
         new ThemeWatcher(),
         new MiniCssExtractPlugin(),
-        new CopyPlugin({patterns: [{from: asset('images'), to: path.resolve('public', 'images')}]}),
+        new CopyPlugin({
+            patterns: [
+                {from: asset('images'), to: path.resolve('public', 'images')},
+                {from: path.resolve('src/locales'), to: path.resolve('public', 'locales')}
+            ]
+        }),
     ],
     optimization: {
         // ✅ Code Splitting Configuration
