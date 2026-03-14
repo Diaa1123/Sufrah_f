@@ -3,7 +3,11 @@
         "ar": "سُفرة - قالب المطاعم المتخصص",
         "en": "Sufrah - Specialized Restaurant Theme"
     },
+<<<<<<< HEAD
 
+=======
+    "version": "1.0.0",
+>>>>>>> 7e91f6dc5a691e4f174a546a251a979b42ab5c4a
     "repository": "https://github.com/Diaa1123/Sufrah_f",
     "author_email": "diaalkilany@gmail.com",
     "documentation_url": "https://github.com/Diaa1123/Sufrah_f/blob/main/README.md",
