@@ -75,9 +75,10 @@
 @import './04-components/user-menu';
 @import './04-components/user-pages';
 @import './04-components/home-blocks';
-@import './04-components/homepage';
-@import './04-components/products-listing';
-@import './04-components/product-single';
+// TEMPORARY DISABLED - Testing for conflicts
+// @import './04-components/homepage';
+// @import './04-components/products-listing';
+// @import './04-components/product-single';
 @import './04-components/slider';
 @import './04-components/product';
 @import './04-components/brands';
@@ -88,8 +89,9 @@
 @import './04-components/landing-page';
 @import './04-components/filters';
 @import './04-components/add-product-toast';
-@import './04-components/cart-page';
-@import './04-components/thank-you-page';
+// TEMPORARY DISABLED - Testing for conflicts
+// @import './04-components/cart-page';
+// @import './04-components/thank-you-page';
 
 @import './05-utilities/chat-bots';
 @import './05-utilities/swal';
