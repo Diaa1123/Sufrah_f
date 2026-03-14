@@ -96,7 +96,7 @@
     "tailwindcss": "^3.4.19",
     "terser-webpack-plugin": "^5.4.0",
     "webpack": "^5.103.0",
-    "webpack-cli": "^5.0.1"
+    "webpack-cli": "^7.0.0"
   },
   "pnpm": {
     "overrides": {
