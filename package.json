@@ -71,7 +71,7 @@
     "@testing-library/jest-dom": "^6.9.1",
     "autoprefixer": "^10.4.21",
     "babel-jest": "^30.3.0",
-    "babel-loader": "^10.0.0",
+    "babel-loader": "^10.1.1",
     "babel-loader-exclude-node-modules-except": "^1.2.1",
     "concurrently": "^9.2.1",
     "copy-webpack-plugin": "^13.0.1",
