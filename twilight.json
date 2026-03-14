@@ -3,8 +3,11 @@
         "ar": "سُفرة - قالب المطاعم المتخصص",
         "en": "Sufrah - Specialized Restaurant Theme"
     },
+    "version": "1.0.0",
     "repository": "https://github.com/Diaa1123/Sufrah_f",
     "author_email": "diaalkilany@gmail.com",
+    "documentation_url": "https://github.com/Diaa1123/Sufrah_f/blob/main/README.md",
+    "support_url": "https://github.com/Diaa1123/Sufrah_f/issues",
     "description": {
         "ar": "أول قالب متخصص للمطاعم والمطابخ السحابية على منصة سلة - وفّر عمولات التوصيل وابنِ قناة مبيعات مباشرة مع نظام الإضافات وإدارة التوصيل",
         "en": "First specialized restaurant theme on Salla platform - Save delivery commissions and build direct sales with modifiers system and delivery management"
