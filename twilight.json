@@ -5,6 +5,10 @@
     },
     "repository": "https://github.com/Diaa1123/Sufrah_f",
     "author_email": "diaalkilany@gmail.com",
+    "description": {
+        "ar": "ara",
+        "en": "First specialized restaurant theme on Salla platform - Save delivery commissions and build direct sales with modifiers system and delivery management"
+    },
     "features": [
         "mega-menu",
         "fonts",
