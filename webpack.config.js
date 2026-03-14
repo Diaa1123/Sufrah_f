@@ -1,6 +1,5 @@
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
-const TerserPlugin = require('terser-webpack-plugin');
 const ThemeWatcher = require('@salla.sa/twilight/watcher.js');
 const CopyPlugin = require('copy-webpack-plugin');
 const path = require('path');
@@ -82,62 +81,11 @@ module.exports = {
         }),
     ],
     optimization: {
-        // ✅ Code Splitting Configuration
-        splitChunks: {
-            chunks: 'all',
-            cacheGroups: {
-                // Vendor bundle (node_modules)
-                vendor: {
-                    test: /[\\/]node_modules[\\/]/,
-                    name: 'vendors',
-                    priority: 10,
-                    reuseExistingChunk: true,
-                    enforce: true,
-                },
-                // Common/shared code
-                common: {
-                    minChunks: 2,
-                    name: 'common',
-                    priority: 1,
-                    reuseExistingChunk: true,
-                    minSize: 10000, // Only split if > 10KB
-                },
-            },
-        },
-        // ✅ Minification
-        minimize: true,
         minimizer: [
-            // JavaScript minification with optimization
-            new TerserPlugin({
-                terserOptions: {
-                    compress: {
-                        drop_console: process.env.NODE_ENV === 'production', // Remove console.log in production
-                        drop_debugger: true,
-                        pure_funcs: ['console.log', 'console.info', 'console.debug'], // Remove specific console methods
-                    },
-                    mangle: true, // Shorten variable names
-                    output: {
-                        comments: false, // Remove comments
-                    },
-                },
-                extractComments: false, // Don't extract comments to separate file
-            }),
-            // CSS minification
-            new CssMinimizerPlugin({
-                minimizerOptions: {
-                    preset: [
-                        'default',
-                        {
-                            discardComments: { removeAll: true },
-                        },
-                    ],
-                },
-            }),
+            `...`,
+            new CssMinimizerPlugin(),
         ],
-        // ✅ Runtime chunk (webpack runtime code)
-        runtimeChunk: {
-            name: 'runtime',
-        },
     },
 }
 ;
+

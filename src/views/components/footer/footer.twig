@@ -23,17 +23,13 @@
             </div>
           {% endif %}
 
-          {# Business Hours Widget (Footer) #}
+          {# Business hours - uses theme settings #}
           <div class="mb-6 bg-gray-800 rounded-xl p-4">
             <h4 class="text-white font-semibold mb-3 flex items-center gap-2">
               <i class="sicon-clock"></i>
-              {{ trans('restaurant.business_hours') }}
+              {{ trans('common.working_hours') }}
             </h4>
-            {% include 'components/restaurant/business-hours-widget.twig' with {
-              show_today_only: false,
-              compact: true,
-              dark_mode: true
-            } %}
+            <p class="text-sm text-gray-400">{{ trans('common.contact_us_for_hours') }}</p>
           </div>
 
           {# Social Media (Desktop) #}
@@ -55,15 +51,6 @@
               <i class="sicon-dining {{ theme.is_rtl ? 'ml-1' : 'mr-1' }}"></i>
               {{ trans('restaurant.menu') }}
             </a>
-            {% set categories = salla.category.getAll() %}
-            {% if categories|length > 0 %}
-              {% for category in categories limit:3 %}
-                <a href="{{ category.url }}"
-                   class="block text-sm hover:text-white transition-colors {{ theme.is_rtl ? 'pr-5' : 'pl-5' }}">
-                  {{ category.name }}
-                </a>
-              {% endfor %}
-            {% endif %}
           </div>
         </div>
 

@@ -28,10 +28,7 @@
         <div class="flex items-center gap-4 flex-1">
           {# Business Hours Widget (Desktop Only) #}
           <div class="hidden lg:flex items-center">
-            {% include 'components/restaurant/business-hours-widget.twig' with {
-              show_today_only: true,
-              compact: true
-            } %}
+            {# Business hours widget disabled - uses non-standard APIs #}
           </div>
 
           {# Important Links #}
@@ -131,46 +128,13 @@
               </a>
 
               {# Categories Mega Menu #}
-              {% set categories = salla.category.getAll() %}
-              {% if categories|length > 0 %}
-                <div class="relative group">
-                  <button class="nav-link font-semibold text-gray-700 hover:text-primary-600 transition-colors flex items-center gap-1"
-                          role="menuitem"
-                          aria-haspopup="true"
-                          aria-expanded="false"
-                          aria-label="{{ trans('common.categories') }}">
-                    <i class="sicon-list {{ theme.is_rtl ? 'ml-1' : 'mr-1' }}" aria-hidden="true"></i>
-                    {{ trans('common.categories') }}
-                    <i class="sicon-keyboard_arrow_down text-sm" aria-hidden="true"></i>
-                  </button>
-
-                  {# Categories Dropdown #}
-                  <div class="absolute {{ theme.is_rtl ? 'right-0' : 'left-0' }} top-full mt-2 bg-white rounded-xl shadow-xl border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 min-w-[240px] z-50"
-                       role="menu"
-                       aria-label="{{ trans('common.categories') }}">
-                    <div class="py-2">
-                      {% for category in categories limit:8 %}
-                        <a href="{{ category.url }}"
-                           class="block px-4 py-3 hover:bg-primary-50 hover:text-primary-600 transition-colors">
-                          <div class="flex items-center justify-between">
-                            <span class="font-medium">{{ category.name }}</span>
-                            <span class="text-xs text-gray-400">({{ category.products_count }})</span>
-                          </div>
-                        </a>
-                      {% endfor %}
-
-                      {% if categories|length > 8 %}
-                        <div class="border-t border-gray-100 mt-2 pt-2">
-                          <a href="{{ link('products') }}"
-                             class="block px-4 py-2 text-primary-600 font-semibold text-sm hover:bg-primary-50 transition-colors">
-                            {{ trans('common.view_all') }} →
-                          </a>
-                        </div>
-                      {% endif %}
-                    </div>
-                  </div>
-                </div>
-              {% endif %}
+              {# Categories link #}
+              <a href="{{ link('products') }}"
+                 class="nav-link font-semibold text-gray-700 hover:text-primary-600 transition-colors"
+                 role="menuitem">
+                <i class="sicon-list {{ theme.is_rtl ? 'ml-1' : 'mr-1' }}" aria-hidden="true"></i>
+                {{ trans('common.categories') }}
+              </a>
 
               {# Custom Pages Menu #}
               <custom-main-menu></custom-main-menu>
@@ -234,12 +198,7 @@
 
     <div class="mobile-menu-content p-4">
       {# Business Hours (Mobile) #}
-      <div class="mb-6 bg-primary-50 rounded-xl p-4">
-        {% include 'components/restaurant/business-hours-widget.twig' with {
-          show_today_only: false,
-          compact: false
-        } %}
-      </div>
+      {# Business hours widget disabled - uses non-standard APIs #}
 
       {# Main Navigation #}
       <nav class="space-y-2 mb-6" role="navigation" aria-label="{{ trans('common.mobile_menu') }}">
@@ -258,26 +217,11 @@
         </a>
 
         {# Categories in Mobile Menu #}
-        {% set categories = salla.category.getAll() %}
-        {% if categories|length > 0 %}
-          <details class="mobile-nav-dropdown">
-            <summary class="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 cursor-pointer">
-              <div class="flex items-center gap-3">
-                <i class="sicon-list text-xl"></i>
-                <span class="font-semibold">{{ trans('common.categories') }}</span>
-              </div>
-              <i class="sicon-keyboard_arrow_down transition-transform"></i>
-            </summary>
-            <div class="mt-2 {{ theme.is_rtl ? 'mr-8' : 'ml-8' }} space-y-1">
-              {% for category in categories %}
-                <a href="{{ category.url }}"
-                   class="block p-2 rounded-lg hover:bg-gray-50 text-sm">
-                  {{ category.name }} <span class="text-gray-400">({{ category.products_count }})</span>
-                </a>
-              {% endfor %}
-            </div>
-          </details>
-        {% endif %}
+        <a href="{{ link('products') }}"
+           class="mobile-nav-link flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+          <i class="sicon-list text-xl" aria-hidden="true"></i>
+          <span class="font-semibold">{{ trans('common.categories') }}</span>
+        </a>
       </nav>
 
       {# Footer Menu in Mobile #}
